@@ -1,0 +1,20 @@
+{
+  "name": "proxybet-ssr",
+  "version": "1.0.0",
+  "description": "Proxy-bet: Sport betting and predictions",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Arekhandia Harry",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "mongoose": "^6.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
