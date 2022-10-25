@@ -1,10 +1,11 @@
 const { default: mongoose } = require("mongoose");
 
 mongoose.connect('mongodb://localhost:27017/proxyBet', {
-	useNewUrlParser: true
+	useNewUrlParser: true,
+	useUnifiedTopology: true
 })
 mongoose.connection
-	.on('error', (err) => {
+	.on('error', err => {
 		console.log(err)
 		mongoose.disconnect()
 	})
