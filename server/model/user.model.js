@@ -16,10 +16,10 @@ const userModel = new UserSchema({
         trim: true,
         lowercase: true,
         validate: {
-            validator: usr => {
+            validator: function (usr) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usr);
             },
-            message: `${usr} is not a valid email`
+            message: "{VALUE} is not a valid email"
         },
         unique: [true, "Email already exits!"],
         required: [true, "Email is required"],
@@ -56,4 +56,4 @@ const userModel = new UserSchema({
     }
 });
 
-module.exports = mongoose.model('User', userModel, 'Users');
+module.exports = mongoose.model('Users', userModel);
