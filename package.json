@@ -10,8 +10,11 @@
   "author": "Arekhandia Harry",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.7"
   },
   "devDependencies": {

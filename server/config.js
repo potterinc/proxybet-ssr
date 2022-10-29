@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-mongoose.connect('mongodb://localhost:27017/proxyBet', {
+mongoose.connect(process.env.SERVER_URI, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true
 })
