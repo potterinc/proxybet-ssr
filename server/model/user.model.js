@@ -31,13 +31,10 @@ const userModel = new UserSchema({
     phone: {
         type: String,
         maxlength: 11,
-        unique: true,
+        unique: [true, "Pone number already exists"],
         required: [true, "Phone Number is required"]
     },
-    role: {
-        type: String,
-        required: true
-    },
+    role: String,
     dateRegistered: {
         type: Date,
         default: Date.now,
