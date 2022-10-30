@@ -1,6 +1,7 @@
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { MongooseError } = require('mongoose');
 const User = require('../model/user.model');
 
 
@@ -26,9 +27,32 @@ const newUser = (req, res) => {
                 })
             })
             .catch(e => {
-                res.status(400).json({
-                    message: e.message
-                })
+                if (e.name == 'ValidationError') {
+                    if (e.errors['email']) {
+                        res.status(400).json({
+                            message: e.errors['email'].message
+                        })
+                    }
+                    if (e.errors['phone']) {
+                        res.status(400).json({
+                            message: e.errors['phone'].message
+                        })
+                    }
+                }
+                if (e.name = 'MongoServerError') {
+                    if (e.keyValue['email']) {
+                        res.status(405).json({
+                            message: `${e.keyValue.email} already exist`
+                        })
+                    }
+                    if (e.keyValue['phone']) {
+                        res.status(405).json({
+                            message: `${e.keyValue.phone} already exist`
+                        })
+                    }
+                }
+
+
             })
     })
 }
@@ -42,32 +66,25 @@ const login = (req, res) => {
     let email = req.body.email
     let password = req.body.password
 
-    User.find({ email })
+    User.findOne({ email })
         .then(user => {
             if (user) {
-                bcrypt.compare(password, user.password, (err, result) => {
-                    if (err) {
-                        res.status(400).json({
-                            message: err
-                        })
-                    }
-                    if (result) {
-                        delete user.password
+                console.log(password);
+                console.log(user.password);
+                if (bcrypt.compareSync(password, user.password)) {
+                    delete user.password
 
-                        const authToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expriresIn: '1d'})
-                        res.status(200).json({
-                            message: "Login Successful",
-                            authToken
-                        })
-                        setTimeout(() => {
-                            console.log('Redirecting...')
-                        }, 3000)
-                    } else {
-                        res.status(400).json({
-                            message: "TRY AGAIN: Password Invalid!"
-                        })
-                    }
-                })
+                    const authToken = jwt.sign(JSON.stringify(user), process.env.ACCESS_TOKEN_SECRET)
+
+                    res.status(200).json({
+                        message: "Login Successful",
+                        authToken
+                    })
+                } else {
+                    res.status(406).json({
+                        message: "TRY AGAIN: Password Invalid!"
+                    })
+                }
             }
             else {
                 res.status(400).json({

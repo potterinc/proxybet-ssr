@@ -31,7 +31,7 @@ const userModel = new UserSchema({
     phone: {
         type: String,
         maxlength: 11,
-        unique: [true, "Pone number already exists"],
+        unique: [true, "Phone number already exists"],
         required: [true, "Phone Number is required"]
     },
     role: String,

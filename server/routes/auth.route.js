@@ -8,16 +8,16 @@ auth
     .post('/login', authService.login)
 
     // New User Registration
-    .post('/register', authService.newUser, authService.login)
+    .post('/register', authService.newUser)
 
 
-    .post('/:email', (req, res) => {
-        res.status(200).json({ status: 'ok' })
-    })
     .post('/reset', (req, res) => {
         res.status(200).json({ status: 'ok' })
     })
 
+    .post('/:email', (req, res) => {
+        res.status(200).json({ status: 'ok' })
+    })
 //Authentication middleware
 
 
