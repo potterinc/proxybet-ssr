@@ -1,7 +1,6 @@
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { MongooseError } = require('mongoose');
 const User = require('../model/user.model');
 
 
@@ -22,9 +21,14 @@ const newUser = (req, res) => {
         });
         newUser.save()
             .then(user => {
+                delete user.password
+
                 res.status(201).json({
-                    message: "Registration Successful"
+                    message: "Registration Successful",
+                    status: true,
+                    token: NEW_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                 })
+
             })
             .catch(e => {
                 if (e.name == 'ValidationError') {
@@ -39,18 +43,24 @@ const newUser = (req, res) => {
                         })
                     }
                 }
-                if (e.name = 'MongoServerError') {
-                    if (e.keyValue['email']) {
-                        res.status(405).json({
-                            message: `${e.keyValue.email} already exist`
-                        })
-                    }
-                    if (e.keyValue['phone']) {
-                        res.status(405).json({
-                            message: `${e.keyValue.phone} already exist`
-                        })
-                    }
+                else {
+                    res.status(405).json({
+                        // message: "ERROR: Email or phone already exists in our "
+                        message: e.message
+                    })
                 }
+                // if (e.name = 'MongoServerError') {
+                //     if (e.keyValue['email']) {
+                //         res.status(405).json({
+                //             message: `${e.keyValue.email} already exist`
+                //         })
+                //     }
+                //     if (e.keyValue['phone']) {
+                //         res.status(405).json({
+                //             message: `${e.keyValue.phone} already exist`
+                //         })
+                //     }
+                // }
 
 
             })
@@ -69,16 +79,12 @@ const login = (req, res) => {
     User.findOne({ email })
         .then(user => {
             if (user) {
-                console.log(password);
-                console.log(user.password);
                 if (bcrypt.compareSync(password, user.password)) {
                     delete user.password
 
-                    const authToken = jwt.sign(JSON.stringify(user), process.env.ACCESS_TOKEN_SECRET)
-
                     res.status(200).json({
                         message: "Login Successful",
-                        authToken
+                        token: NEW_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                     })
                 } else {
                     res.status(406).json({
@@ -93,5 +99,26 @@ const login = (req, res) => {
             }
         })
 }
+/**
+ * 
+ * @param {ArrayBuffer | Object } payload
+ * @param {String} key 
+ * @returns String
+ */
+const NEW_AUTH_TOKEN = (payload, key) => {
+    return jwt.sign({payload}, key, {expiresIn: '7d'})
+}
 
-module.exports = { newUser, login }
+const VERIFY_AUTH_TOKEN = (req, res, next) => {
+    const bearerHeader = req.headers['authorization']
+    if (typeof bearerHeader !== 'undefined') {
+        const bearerToken = bearerHeader.split(' ')
+        req.token = bearerToken[1]
+        next()
+    } else {
+        res.sendStatus(403)
+    }
+}
+
+// const VERIFY_AUTH_TOKEN
+module.exports = { newUser, login, NEW_AUTH_TOKEN, VERIFY_AUTH_TOKEN }

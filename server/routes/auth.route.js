@@ -1,5 +1,7 @@
 const express = require('express');
 const auth = express.Router()
+const jwt = require('jsonwebtoken')
+
 
 const authService = require('../controller/auth.service')
 
@@ -11,14 +13,22 @@ auth
     .post('/register', authService.newUser)
 
 
-    .post('/reset', (req, res) => {
-        res.status(200).json({ status: 'ok' })
+    .post('/reset', authService.VERIFY_AUTH_TOKEN, (req, res) => {
+        jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET, (err, authData) => {
+            if (err) {
+                res.sendStatus(403)
+            } else {
+                res.status(200).json({
+                    status: 'ok',
+                    authData
+                })
+            }
+        })
     })
 
     .post('/:email', (req, res) => {
         res.status(200).json({ status: 'ok' })
     })
-//Authentication middleware
 
 
 module.exports = auth;
