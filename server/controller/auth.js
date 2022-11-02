@@ -99,6 +99,8 @@ const login = (req, res) => {
             }
         })
 }
+
+
 /**
  * 
  * @param {ArrayBuffer | Object } payload
@@ -109,6 +111,8 @@ const NEW_AUTH_TOKEN = (payload, key) => {
     return jwt.sign({payload}, key, {expiresIn: '7d'})
 }
 
+
+// Authentication Middleware function
 const VERIFY_AUTH_TOKEN = (req, res, next) => {
     const bearerHeader = req.headers['authorization']
     if (typeof bearerHeader !== 'undefined') {
@@ -120,5 +124,4 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
     }
 }
 
-// const VERIFY_AUTH_TOKEN
 module.exports = { newUser, login, NEW_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
