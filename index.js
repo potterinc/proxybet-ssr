@@ -20,7 +20,7 @@ app.use('/api/auth/', authentication)
 app.use('/api/admin/ticket', gameSlip)
 app.use('/api/user/bet', betSlip)
 app.use('/api/user/wallet', wallet)
-app.use('/api/user/account', user)
+app.use('/api/user/profile', user)
 
 app.set('view engine', 'ejs')
 require('./server/config')

@@ -1,8 +1,8 @@
 const { mongoose } = require('../config')
 
-const BetSlipSchema = mongoose.Schema
-
-const betSlipModel = new BetSlipSchema({
+/** BET SLIPS */
+const betSlipSchema = mongoose.Schema
+const BetSlips = new betSlipSchema({
 	game: [{
 		HTeam: {
 			type: String,
@@ -47,4 +47,26 @@ const betSlipModel = new BetSlipSchema({
 	}
 })
 
-module.exports = mongoose.model('BetSlips', betSlipModel);
+/** PLACING OF BETS*/
+
+const bettingSchema = mongoose.Schema
+const Bets = new bettingSchema({
+	userID: String,
+	stake: {
+		type: Number,
+		required: [true, 'Your stake is required']
+	},
+	betSlip: String,
+	betDate: {
+		type: Date,
+		default: Date.now
+	}
+})
+
+const bets = mongoose.model('Bets', Bets)
+const bettingSlip = mongoose.model('BetSlips', BetSlips)
+
+module.exports = {
+	bets,
+	bettingSlip
+}
