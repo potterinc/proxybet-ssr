@@ -1,6 +1,7 @@
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const mailer = require('nodemailer')
 const User = require('../model/user.model');
 
 
@@ -100,6 +101,30 @@ const login = (req, res) => {
         })
 }
 
+/**EMAIL VERIFICATION */
+const verifyEmail = (req, res) => {
+
+    User.findOne({ email: req.body.email }, { _id: 1 })
+        .then(user => {
+            if (!user) {
+                res.status(400).json({
+                    isValid: false,
+                    message: `FAILED: ${req.body.email} does not exist`
+                })
+                return
+            }
+            // send email to client
+            res.status(200).json({
+                isValid: true,
+                user
+            })
+        })
+        .catch(e => {
+            res.status(500).json({
+                message: e.message
+            })
+        })
+}
 
 /**
  * 
@@ -108,7 +133,7 @@ const login = (req, res) => {
  * @returns String
  */
 const NEW_AUTH_TOKEN = (payload, key) => {
-    return jwt.sign({payload}, key, {expiresIn: '7d'})
+    return jwt.sign({ payload }, key, { expiresIn: '7d' })
 }
 
 
@@ -124,4 +149,4 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
     }
 }
 
-module.exports = { newUser, login, NEW_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
+module.exports = { newUser, login, verifyEmail, NEW_AUTH_TOKEN, VERIFY_AUTH_TOKEN }

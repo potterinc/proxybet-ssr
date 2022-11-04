@@ -2,9 +2,14 @@ const express = require('express');
 const auth = express.Router()
 const jwt = require('jsonwebtoken')
 
-
+// Route Controlers
+const authService = require('../controller/auth')
 
 auth
+
+    // USER VERIFICATION
+    .post('/', authService.verifyEmail)
+
     // User Login
     .post('/login', authService.login)
 
@@ -25,11 +30,5 @@ auth
         // })
     })
 
-    .post('/:email', (req, res) => {
-        res.status(200).json({ status: 'ok' })
-    })
-
-// Route Controlers
-const authService = require('../controller/auth')
 
 module.exports = auth;
