@@ -8,7 +8,7 @@ const authService = require('../controller/auth')
 auth
 
     // USER VERIFICATION
-    .post('/', authService.verifyEmail)
+    .post('/', authService.VERIFY_EMAIL)
 
     // User Login
     .post('/login', authService.login)

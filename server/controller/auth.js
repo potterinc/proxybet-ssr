@@ -1,4 +1,5 @@
 require('dotenv').config()
+const crypto = require("crypto");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mailer = require('nodemailer')
@@ -27,7 +28,7 @@ const newUser = (req, res) => {
                 res.status(201).json({
                     message: "Registration Successful",
                     status: true,
-                    token: NEW_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
+                    token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                 })
 
             })
@@ -85,7 +86,7 @@ const login = (req, res) => {
 
                     res.status(200).json({
                         message: "Login Successful",
-                        token: NEW_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
+                        token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                     })
                 } else {
                     res.status(406).json({
@@ -101,30 +102,6 @@ const login = (req, res) => {
         })
 }
 
-/**EMAIL VERIFICATION */
-const verifyEmail = (req, res) => {
-
-    User.findOne({ email: req.body.email }, { _id: 1 })
-        .then(user => {
-            if (!user) {
-                res.status(400).json({
-                    isValid: false,
-                    message: `FAILED: ${req.body.email} does not exist`
-                })
-                return
-            }
-            // send email to client
-            res.status(200).json({
-                isValid: true,
-                user
-            })
-        })
-        .catch(e => {
-            res.status(500).json({
-                message: e.message
-            })
-        })
-}
 
 /**
  * 
@@ -132,10 +109,15 @@ const verifyEmail = (req, res) => {
  * @param {String} key 
  * @returns String
  */
-const NEW_AUTH_TOKEN = (payload, key) => {
+const SIGN_AUTH_TOKEN = (payload, key) => {
     return jwt.sign({ payload }, key, { expiresIn: '7d' })
 }
 
+const RESET_CODE = () => {
+    const randomString = crypto.randomBytes(3).toString("hex").toUpperCase();
+    return randomString
+
+}
 
 // Authentication Middleware function
 const VERIFY_AUTH_TOKEN = (req, res, next) => {
@@ -149,4 +131,34 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
     }
 }
 
-module.exports = { newUser, login, verifyEmail, NEW_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
+/**EMAIL VERIFICATION */
+const VERIFY_EMAIL = (req, res, next) => {
+
+    User.findOne({ email: req.body.email }, { _id: 1 })
+        .then(user => {
+            if (!user) {
+                res.status(400).json({
+                    isValid: false,
+                    message: `FAILED: ${req.body.email} does not exist`
+                })
+                return
+            }
+            // Generate code
+            // Save code in user collection
+            // send email to client
+            res.status(200).json({
+                isValid: true,
+                message: `An authentication code has been sent to ${req.body.email}`,
+                user,
+                code: `BET-${RESET_CODE()}`
+            })
+            next()
+        })
+        .catch(e => {
+            res.status(500).json({
+                message: e.message
+            })
+        })
+}
+
+module.exports = { newUser, login, VERIFY_EMAIL, SIGN_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
