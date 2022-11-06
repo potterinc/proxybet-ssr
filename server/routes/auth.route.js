@@ -17,7 +17,7 @@ auth
     .post('/register', authService.newUser)
 
 
-    .post('/reset', authService.VERIFY_AUTH_TOKEN, (req, res) => {
+    .post('/reset', authService.VERIFY_EMAIL, authService.userResetCode)
         // jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET, (err, authData) => {
         //     if (err) {
         //         res.sendStatus(403)
@@ -28,7 +28,6 @@ auth
         //         })
         //     }
         // })
-    })
 
 
 module.exports = auth;

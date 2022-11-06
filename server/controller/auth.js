@@ -2,7 +2,7 @@ require('dotenv').config()
 const crypto = require("crypto");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mailer = require('nodemailer')
+const nodemailer = require('nodemailer')
 const User = require('../model/user.model');
 
 
@@ -102,9 +102,29 @@ const login = (req, res) => {
         })
 }
 
+const userResetCode = async (req, res) => {
+    try {
+        await User.findOneAndUpdate({ email: req.body.email },
+            {
+                $set: {
+                    "Auth.token": req.body.code
+                }
+            })
+
+        res.status(200).json({
+            isValid: true,
+            message: `An authentication code has been sent to ${req.body.email}`,
+            user,
+            code: `BET-${RESET_CODE()}`
+        })
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+
+
+}
 
 /**
- * 
  * @param {ArrayBuffer | Object } payload
  * @param {String} key 
  * @returns String
@@ -131,7 +151,7 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
     }
 }
 
-/**EMAIL VERIFICATION */
+/**Email authentication middleware */
 const VERIFY_EMAIL = (req, res, next) => {
 
     User.findOne({ email: req.body.email }, { _id: 1 })
@@ -143,15 +163,40 @@ const VERIFY_EMAIL = (req, res, next) => {
                 })
                 return
             }
-            // Generate code
-            // Save code in user collection
+
             // send email to client
-            res.status(200).json({
-                isValid: true,
-                message: `An authentication code has been sent to ${req.body.email}`,
-                user,
-                code: `BET-${RESET_CODE()}`
-            })
+            let resetCode = RESET_CODE()
+            let outputHTML = resetCode() // some html message
+
+            const mailer = nodemailer.createTransport({
+                host: "smtp.proxybet.com",
+                port: 465,
+                secure: true,
+                auth: {
+                    user: "no-reply@proxybet.com",
+                    pass: "Proxybe123",
+                },
+                tls: {
+                    // do not fail on invalid certs
+                    rejectUnauthorized: false,
+                },
+            });
+
+            const mailOptions = {
+                from: 'no-reply@proxybet.com',
+                to: req.body.email,
+                subject: '', // same output in plain text format
+                text: outputHTML
+            };
+
+            mailer.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+
             next()
         })
         .catch(e => {
@@ -161,4 +206,4 @@ const VERIFY_EMAIL = (req, res, next) => {
         })
 }
 
-module.exports = { newUser, login, VERIFY_EMAIL, SIGN_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
+module.exports = { newUser, login, userResetCode, VERIFY_EMAIL, SIGN_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
