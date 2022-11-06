@@ -165,12 +165,12 @@ const VERIFY_EMAIL = (req, res, next) => {
             req.body.code = resetCode
 
             const mailer = nodemailer.createTransport({
-                host: "198.54.115.244",
+                host: process.env._SMTP_HOST,
                 port: 465,
                 secure: true,
                 auth: {
-                    user: "harek@potterincorporated.com",
-                    pass: "@Harek123",
+                    user: process.env._SMTP_USER,
+                    pass: process.env._PASSKEY,
                 },
                 tls: {
                     // do not fail on invalid certs
@@ -179,7 +179,7 @@ const VERIFY_EMAIL = (req, res, next) => {
             });
 
             const mailOptions = {
-                from: 'ProxyBet <info@potterincorporated.com>',
+                from: 'ProxyBet',
                 to: req.body.email,
                 subject: 'Password Reset', // same output in plain text format
                 text: outputHTML
