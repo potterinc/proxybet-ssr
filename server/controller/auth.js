@@ -105,20 +105,14 @@ const login = (req, res) => {
 const userResetCode = async (req, res) => {
     try {
         await User.findOneAndUpdate({ email: req.body.email },
-            {
-                $set: {
-                    "Auth.token": req.body.code
-                }
-            })
+            {"Auth.token": req.body.code})
 
         res.status(200).json({
             isValid: true,
-            message: `An authentication code has been sent to ${req.body.email}`,
-            user,
-            code: `BET-${RESET_CODE()}`
+            message: `An authentication code has been sent to ${req.body.email}`
         })
     } catch (e) {
-        res.status(500).json({message: e.message})
+        res.status(500).json({ message: e.message })
     }
 
 
@@ -132,6 +126,7 @@ const userResetCode = async (req, res) => {
 const SIGN_AUTH_TOKEN = (payload, key) => {
     return jwt.sign({ payload }, key, { expiresIn: '7d' })
 }
+
 
 const RESET_CODE = () => {
     const randomString = crypto.randomBytes(3).toString("hex").toUpperCase();
@@ -165,16 +160,17 @@ const VERIFY_EMAIL = (req, res, next) => {
             }
 
             // send email to client
-            let resetCode = RESET_CODE()
-            let outputHTML = resetCode() // some html message
+            let resetCode = `BET-${RESET_CODE()}`
+            let outputHTML = resetCode // some html message
+            req.body.code = resetCode
 
             const mailer = nodemailer.createTransport({
-                host: "smtp.proxybet.com",
+                host: "198.54.115.244",
                 port: 465,
                 secure: true,
                 auth: {
-                    user: "no-reply@proxybet.com",
-                    pass: "Proxybe123",
+                    user: "harek@potterincorporated.com",
+                    pass: "@Harek123",
                 },
                 tls: {
                     // do not fail on invalid certs
@@ -183,15 +179,16 @@ const VERIFY_EMAIL = (req, res, next) => {
             });
 
             const mailOptions = {
-                from: 'no-reply@proxybet.com',
+                from: 'ProxyBet <info@potterincorporated.com>',
                 to: req.body.email,
-                subject: '', // same output in plain text format
+                subject: 'Password Reset', // same output in plain text format
                 text: outputHTML
             };
 
             mailer.sendMail(mailOptions, function (error, info) {
                 if (error) {
                     console.log(error);
+                    res.sendStatus(501)
                 } else {
                     console.log('Email sent: ' + info.response);
                 }

@@ -16,7 +16,7 @@ auth
     // New User Registration
     .post('/register', authService.newUser)
 
-
+    // Password Reset
     .post('/reset', authService.VERIFY_EMAIL, authService.userResetCode)
         // jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET, (err, authData) => {
         //     if (err) {
@@ -28,6 +28,5 @@ auth
         //         })
         //     }
         // })
-
 
 module.exports = auth;
