@@ -179,7 +179,7 @@ const VERIFY_EMAIL = (req, res, next) => {
             });
 
             const mailOptions = {
-                from: 'ProxyBet',
+                from: 'ProxyBet <harek@potterincorporated.com>',
                 to: req.body.email,
                 subject: 'Password Reset', // same output in plain text format
                 text: outputHTML
