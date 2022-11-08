@@ -148,63 +148,10 @@ const userResetCode = async (req, res) => {
         res.status(500).json({ message: e.message })
     }
 
-
+    // Delete reset token after 15 minutes
+    resetTimeout(req.body.email)
 }
 
-/**
- * @param {ArrayBuffer | Object } payload
- * @param {String} key 
- * @returns String
- */
-const SIGN_AUTH_TOKEN = (payload, key) => {
-    return jwt.sign({ payload }, key, { expiresIn: '7d' })
-}
-
-/**
- * Sending email to user
- * @param {String} subject message subject header
- * @param {String | HTMLCollection} msgContent HTML string or plain text
- * @param {String } recepient Receiving email addreess
- */
-const proxyMailer = (subject, msgContent, recepient) => {
-
-    const mailer = nodemailer.createTransport({
-        host: process.env._SMTP_HOST,
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env._SMTP_USER,
-            pass: process.env._PASSKEY,
-        },
-        tls: {
-            // do not fail on invalid certs
-            rejectUnauthorized: false,
-        },
-    });
-
-    const mailOptions = {
-        from: 'ProxyBet <harek@potterincorporated.com>',
-        to: recepient,
-        subject, // same output in plain text format
-        html: msgContent
-    };
-
-    mailer.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.log(error);
-            res.sendStatus(501)
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.sendStatus(200)
-        }
-    });
-}
-
-const RESET_CODE = () => {
-    const randomString = crypto.randomBytes(3).toString("hex").toUpperCase();
-    return randomString
-
-}
 /** 
  *MIDDLEWARE FUNCTION
  */
