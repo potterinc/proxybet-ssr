@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer')
 const jwt = require('jsonwebtoken');
 const User = require('../model/user.model')
 
+
 /**
  * This function signs authentication token for JWT
  * @param {ArrayBuffer | Object } payload

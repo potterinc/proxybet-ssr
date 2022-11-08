@@ -1,6 +1,5 @@
 const express = require('express');
 const auth = express.Router()
-const jwt = require('jsonwebtoken')
 
 // Route Controlers
 const authService = require('../controller/auth')
@@ -18,5 +17,8 @@ auth
 
     // Password Reset
     .post('/reset', authService.VERIFY_EMAIL, authService.userResetCode)
+
+    // Update new password
+    .patch('/reset/:id', authService.updateNewPassword)
         
 module.exports = auth;

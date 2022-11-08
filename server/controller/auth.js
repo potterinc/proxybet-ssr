@@ -152,6 +152,23 @@ const userResetCode = async (req, res) => {
     resetTimeout(req.body.email)
 }
 
+// Update new password
+const updateNewPassword = async(req, res) => {
+    try {
+       await User.findOneAndUpdate({_id: req.params.id },
+            {
+                password: bcrypt.hashSync(req.body.password, 3)
+            })
+        res.status(201).json({
+            message: "Password Changed"
+        })
+    } catch (e) {
+        res.status(400).json({
+            message: `Error: ${e.message}`
+        })
+    }
+}
+
 /** 
  *MIDDLEWARE FUNCTION
  */
@@ -220,4 +237,10 @@ const VERIFY_EMAIL = (req, res, next) => {
         })
 }
 
-module.exports = { newUser, login, userResetCode, VERIFY_EMAIL, SIGN_AUTH_TOKEN, VERIFY_AUTH_TOKEN }
+module.exports = { newUser, 
+    login, 
+    userResetCode,
+    updateNewPassword,
+    VERIFY_EMAIL, 
+    SIGN_AUTH_TOKEN, 
+    VERIFY_AUTH_TOKEN }
