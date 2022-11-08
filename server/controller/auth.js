@@ -1,11 +1,11 @@
 require('dotenv').config()
-const crypto = require("crypto");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer')
+
+const { proxyMailer, SIGN_AUTH_TOKEN, RESET_CODE, resetTimeout } = require("./auth.module");
+
 const User = require('../model/user.model');
 
-
+// User registration
 const newUser = (req, res) => {
     bcrypt.hash(req.body.password, 3, (err, encryptedPassword) => {
         if (err) {
@@ -13,7 +13,7 @@ const newUser = (req, res) => {
                 message: err
             })
         }
-        const newUser = new User({
+        const user = new User({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
@@ -21,7 +21,7 @@ const newUser = (req, res) => {
             phone: req.body.phone,
             role: process.env.DEFAULT_ROLE
         });
-        newUser.save()
+        user.save()
             .then(user => {
                 delete user.password
 
@@ -101,11 +101,7 @@ const newUser = (req, res) => {
     })
 }
 
-/**
- * 
- * @param {Request} req 
- * @param {Response} res
- */
+//User login
 const login = (req, res) => {
     let email = req.body.email
     let password = req.body.password
@@ -134,10 +130,15 @@ const login = (req, res) => {
         })
 }
 
+// Email reset code
 const userResetCode = async (req, res) => {
     try {
         await User.findOneAndUpdate({ email: req.body.email },
-            {"Auth.token": req.body.code})
+            {
+                Auth: {
+                    token: req.code
+                }
+            })
 
         res.status(200).json({
             isValid: true,
@@ -220,10 +221,10 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
     }
 }
 
-/**Email authentication middleware */
+/**Email authentication */
 const VERIFY_EMAIL = (req, res, next) => {
 
-    User.findOne({ email: req.body.email }, { _id: 1 })
+    User.findOne({ email: req.body.email }, { _id: 1, firstName: 1 })
         .then(user => {
             if (!user) {
                 res.status(400).json({
@@ -233,45 +234,40 @@ const VERIFY_EMAIL = (req, res, next) => {
                 return
             }
 
-            // send email to client
             let resetCode = `BET-${RESET_CODE()}`
-            let outputHTML = resetCode // some html message
-            req.body.code = resetCode
+            const d = new Date()
+            let year = d.getFullYear()
+            req.code = resetCode
 
-            const mailer = nodemailer.createTransport({
-                host: process.env._SMTP_HOST,
-                port: 465,
-                secure: true,
-                auth: {
-                    user: process.env._SMTP_USER,
-                    pass: process.env._PASSKEY,
-                },
-                tls: {
-                    // do not fail on invalid certs
-                    rejectUnauthorized: false,
-                },
-            });
+            let content = `
+            <p style="margin-bottom: 1rem"><strong>Dear ${user.firstName},</strong></p>
+            <p style="margin-bottom: 2rem">
+                <strong>Please enter the following code 
+                    <span 
+                        style="font-size: 1.5rem;
+                        color:#008080">${resetCode}
+                        </span> to verify your account.
+                    </strong>
+                </p>
 
-            const mailOptions = {
-                from: 'ProxyBet <harek@potterincorporated.com>',
-                to: req.body.email,
-                subject: 'Password Reset', // same output in plain text format
-                text: outputHTML
-            };
+            <small>
+                <p style="margin-bottom:10px">Please pay attention:</p>
+                <ul>
+                    <li>After verification, you will be able to modify your password</li>
+                    <li>If you did not apply for a verification code,<br>
+                        please sign in to your account and change your password to ensure your account's security.</li>
+                    <li>In order to protect your account, please do not allow others access to your email.</li>
+                </ul>
+                <hr>
+                <p>&copy; ${year} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
+                </small>`
 
-            mailer.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error);
-                    res.sendStatus(501)
-                } else {
-                    console.log('Email sent: ' + info.response);
-                }
-            });
-
+            // send email to client
+            proxyMailer("Password Reset", content, req.body.email)
             next()
         })
         .catch(e => {
-            res.status(500).json({
+            res.status(504).json({
                 message: e.message
             })
         })

@@ -41,10 +41,7 @@ const userModel = new UserSchema({
         default: Date.now,
     },
     Auth: {
-        token: {
-            type: String,
-            exp: Date,
-        }
+        token: String
     },
     Profile: {
         displayPicture: String,

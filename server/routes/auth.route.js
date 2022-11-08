@@ -18,15 +18,5 @@ auth
 
     // Password Reset
     .post('/reset', authService.VERIFY_EMAIL, authService.userResetCode)
-        // jwt.verify(req.token, process.env.ACCESS_TOKEN_SECRET, (err, authData) => {
-        //     if (err) {
-        //         res.sendStatus(403)
-        //     } else {
-        //         res.status(200).json({
-        //             status: 'ok',
-        //             authData
-        //         })
-        //     }
-        // })
-
+        
 module.exports = auth;
