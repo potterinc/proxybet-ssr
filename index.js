@@ -4,7 +4,7 @@ const path = require('path')
 
 const authentication = require('./server/routes/auth.route')
 const betSlip = require('./server/routes/betslip.route')
-const gameSlip = require('./server/routes/gameslip.route')
+const bets = require('./server/routes/bets.route')
 const wallet = require('./server/routes/wallet.route')
 const user = require('./server/routes/user.route')
 
