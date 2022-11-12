@@ -4,7 +4,7 @@ const path = require('path')
 
 const authentication = require('./server/routes/auth.route')
 const betSlip = require('./server/routes/betslip.route')
-const bets = require('./server/routes/bets.route')
+const betting = require('./server/routes/bets.route')
 const wallet = require('./server/routes/wallet.route')
 const user = require('./server/routes/user.route')
 
@@ -17,8 +17,8 @@ app.use(express.json())
 
 // Routes
 app.use('/api/auth/', authentication)
-app.use('/api/admin/ticket', gameSlip)
-app.use('/api/user/bet', betSlip)
+app.use('/api/admin/ticket', betSlip)
+app.use('/api/user/bet', betting)
 app.use('/api/user/wallet', wallet)
 app.use('/api/user/profile', user)
 
