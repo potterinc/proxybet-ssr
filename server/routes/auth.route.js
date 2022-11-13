@@ -2,23 +2,24 @@ const express = require('express');
 const auth = express.Router()
 
 // Route Controlers
-const authService = require('../controller/auth')
+const { VERIFY_EMAIL,
+    login,
+    newUser,
+    userResetCode,
+    updateNewPassword } = require('../controller/auth')
 
 auth
 
-    // USER VERIFICATION
-    .post('/', authService.VERIFY_EMAIL)
-
     // User Login
-    .post('/login', authService.login)
+    .post('/login', login)
 
     // New User Registration
-    .post('/register', authService.newUser)
+    .post('/register', newUser)
 
     // Password Reset
-    .post('/reset', authService.VERIFY_EMAIL, authService.userResetCode)
+    .post('/reset', VERIFY_EMAIL, userResetCode)
 
     // Update new password
-    .patch('/reset/:id', authService.updateNewPassword)
-        
+    .patch('/reset/:id', updateNewPassword)
+
 module.exports = auth;

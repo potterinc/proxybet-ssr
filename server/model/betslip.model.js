@@ -50,7 +50,7 @@ const BetSlips = new betSlipSchema({
 /** PLACING OF BETS*/
 
 const bettingSchema = mongoose.Schema
-const Bets = new bettingSchema({
+const Bet = new bettingSchema({
 	userID: String,
 	stake: {
 		type: Number,
@@ -63,10 +63,10 @@ const Bets = new bettingSchema({
 	}
 })
 
-const bets = mongoose.model('Bets', Bets)
-const bettingSlip = mongoose.model('BetSlips', BetSlips)
+const Bets = mongoose.model('Bets', Bet)
+const BettingSlip = mongoose.model('BetSlips', BetSlips)
 
 module.exports = {
-	bets,
-	bettingSlip
+	Bets,
+	BettingSlip
 }
