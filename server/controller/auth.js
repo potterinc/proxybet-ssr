@@ -1,4 +1,5 @@
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const { proxyMailer, SIGN_AUTH_TOKEN, RESET_CODE, resetTimeout } = require("./auth.module");
@@ -133,7 +134,7 @@ const login = (req, res) => {
 // Email reset code
 const userResetCode = async (req, res) => {
     try {
-        await User.findOneAndUpdate({ email: req.body.email },
+        await User.findOneAndUpdate({ _id: req.id },
             {
                 Auth: {
                     token: req.code
@@ -149,19 +150,20 @@ const userResetCode = async (req, res) => {
     }
 
     // Delete reset token after 15 minutes
-    resetTimeout(req.body.email)
+    resetTimeout(req.id)
 }
 
 // Update new password
-const updateNewPassword = async(req, res) => {
+const updateNewPassword = async (req, res) => {
     try {
-       await User.findOneAndUpdate({_id: req.params.id },
+        await User.findOneAndUpdate({ _id: req.params.id },
             {
                 password: bcrypt.hashSync(req.body.password, 3)
             })
         res.status(201).json({
             message: "Password Changed"
         })
+        resetTimeout(req.params.id)
     } catch (e) {
         res.status(400).json({
             message: `Error: ${e.message}`
@@ -205,6 +207,7 @@ const VERIFY_EMAIL = (req, res, next) => {
             const d = new Date()
             let year = d.getFullYear()
             req.code = resetCode
+            req.id = user._id
 
             let content = `
             <p style="margin-bottom: 1rem"><strong>Dear ${user.firstName},</strong></p>
@@ -240,10 +243,12 @@ const VERIFY_EMAIL = (req, res, next) => {
         })
 }
 
-module.exports = { newUser, 
-    login, 
+module.exports = {
+    newUser,
+    login,
     userResetCode,
     updateNewPassword,
-    VERIFY_EMAIL, 
-    SIGN_AUTH_TOKEN, 
-    VERIFY_AUTH_TOKEN }
+    VERIFY_EMAIL,
+    SIGN_AUTH_TOKEN,
+    VERIFY_AUTH_TOKEN
+}

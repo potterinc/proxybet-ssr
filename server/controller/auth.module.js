@@ -70,14 +70,14 @@ const RESET_CODE = () => {
  */
 const resetTimeout = (usr) => {
     setTimeout(() => {
-        User.findOneAndUpdate({ email: usr },
+        User.findOneAndUpdate({ _id: usr },
             {
                 Auth: {
                     token: undefined
                 }
             })
             .then(user => {
-                console.log('deleted')
+                console.log('reset token deleted')
             })
             .catch(e => { console.log(e.message) })
 
