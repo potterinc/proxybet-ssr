@@ -156,14 +156,14 @@ const userResetCode = async (req, res) => {
 // Update new password
 const updateNewPassword = async (req, res) => {
     try {
-        await User.findOneAndUpdate({ _id: req.params.id },
+        await User.findOneAndUpdate({ _id: req.body.id },
             {
-                password: bcrypt.hashSync(req.body.password, 3)
+                password: bcrypt.hashSync(req.body.password, 3),
+                Auth: { token: undefined }
             })
         res.status(201).json({
             message: "Password Changed"
         })
-        resetTimeout(req.params.id)
     } catch (e) {
         res.status(400).json({
             message: `Error: ${e.message}`
