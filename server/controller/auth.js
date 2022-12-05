@@ -36,8 +36,8 @@ const newUser = (req, res) => {
                 let mail = `
                 <h1 style="text-align:center">Welcome ${user.firstName},</h1>
                 <p style="text-align:center">
-                Thanks for signing up with ProxyBET, we're so happy to have you
-                on board. You are now one step closer to becoming an bet king!<br>
+                Thank you for signing up with ProxyBET, we're so happy to have you
+                on board. You are now one step closer to becoming a bet king!<br>
                 Your account is Activated!</p>
                 
                 <div style="text-align:center; margin: 50px 0">

@@ -31,7 +31,7 @@ const userModel = new UserSchema({
     phone: {
         type: String,
         minLength: [9,"{VALUE} doesnt seem like a valid number"],
-        maxlength: [11, "{VALUE} is longer then 11 digits"],
+        maxlength: [11, "{VALUE} is longer than 11 digits"],
         unique: [true, "Phone number already exists"],
         required: [true, "Phone Number is required"]
     },

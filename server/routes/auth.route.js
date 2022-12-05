@@ -20,6 +20,6 @@ auth
     .post('/reset', VERIFY_EMAIL, userResetCode)
 
     // Update new password
-    .patch('/reset/:id', updateNewPassword)
+    .patch('/reset/', updateNewPassword)
 
 module.exports = auth;
