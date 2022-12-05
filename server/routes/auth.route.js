@@ -6,7 +6,8 @@ const { VERIFY_EMAIL,
     login,
     newUser,
     userResetCode,
-    updateNewPassword } = require('../controller/auth')
+    updateNewPassword, 
+    authResetToken} = require('../controller/auth')
 
 auth
 
@@ -19,7 +20,9 @@ auth
     // Password Reset
     .post('/reset', VERIFY_EMAIL, userResetCode)
 
+    .post('/verify-token', authResetToken)
+    
     // Update new password
-    .patch('/reset/', updateNewPassword)
+    .patch('/reset', updateNewPassword)
 
 module.exports = auth;

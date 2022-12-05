@@ -153,6 +153,29 @@ const userResetCode = async (req, res) => {
     resetTimeout(req.id)
 }
 
+// Authenticate Reset Token
+const authResetToken = async (req, res) => {
+    try {
+        const resetToken = await User.findOne({ _id: req.body.id }, { Auth: 1 })
+
+        if (resetToken.Auth.token !== req.body.token) {
+            res.status(403).json({
+                status: false,
+                message: "FAILED: Invalid Token!"
+            })
+        } else {
+            res.status(201).json({
+                status: true,
+            })
+        }
+    } catch (e) {
+        res.status(504).json({
+            status: false,
+            message: 'FAILED: Token Expired!'
+        })
+    }
+}
+
 // Update new password
 const updateNewPassword = async (req, res) => {
     try {
@@ -249,6 +272,7 @@ module.exports = {
     login,
     userResetCode,
     updateNewPassword,
+    authResetToken,
     VERIFY_EMAIL,
     SIGN_AUTH_TOKEN,
     VERIFY_AUTH_TOKEN
