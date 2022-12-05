@@ -1,3 +1,4 @@
+const { Schema } = require('mongoose')
 const { mongoose } = require('../config')
 
 /** BET SLIPS */
@@ -56,7 +57,7 @@ const Bet = new bettingSchema({
 		type: Number,
 		required: [true, 'Your stake is required']
 	},
-	betSlip: String,
+	betSlip: Schema.Types.ObjectId,
 	betDate: {
 		type: Date,
 		default: Date.now
