@@ -57,7 +57,7 @@ const Bet = new bettingSchema({
 		type: Number,
 		required: [true, 'Your stake is required']
 	},
-	betSlip: Schema.Types.ObjectId,
+	gameSlip: Schema.Types.ObjectId,
 	betDate: {
 		type: Date,
 		default: Date.now

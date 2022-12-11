@@ -1,6 +1,6 @@
 const express = require('express');
 const { VERIFY_AUTH_TOKEN } = require('../controller/auth');
-const { viewBets } = require('../controller/bet.module');
+const { viewBets, placeBet } = require('../controller/bet.module');
 const betting = express.Router()
 
 
@@ -13,9 +13,7 @@ betting
     .get(VERIFY_AUTH_TOKEN, viewBets)
 
     // Place a bet
-    .post((req, res) => {
-        res.json({ status: 'Bet placed' })
-    });
+    .post(VERIFY_AUTH_TOKEN, placeBet)
 
 betting
     .route('/:id')
