@@ -24,7 +24,7 @@ const newUser = (req, res) => {
         });
         user.save()
             .then(user => {
-                delete user.password
+                user.password = undefined
 
                 res.status(201).json({
                     message: "Registration Successful",
