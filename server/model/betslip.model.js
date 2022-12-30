@@ -39,12 +39,9 @@ const BetSlips = new betSlipSchema({
 	maximumStake: Number,
 	result: Boolean,
 	totalOdds: Number,
-	date: {
-		iat: {
-			type: Date,
-			default: Date.now
-		},
-		exp: Date
+	dateIssued: {
+		type: Date,
+		default: Date.now
 	}
 })
 
@@ -52,7 +49,7 @@ const BetSlips = new betSlipSchema({
 
 const bettingSchema = mongoose.Schema
 const Bet = new bettingSchema({
-	userID: String,
+	userID: Schema.Types.ObjectId,
 	stake: {
 		type: Number,
 		required: [true, 'Your stake is required']

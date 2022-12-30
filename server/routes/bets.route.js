@@ -1,8 +1,7 @@
 const express = require('express');
 const { VERIFY_AUTH_TOKEN } = require('../controller/auth');
-const { viewBets, placeBet } = require('../controller/bet.module');
+const { viewBets, placeBet, updateGameSlip } = require('../controller/bet.module');
 const betting = express.Router()
-
 
 
 /** GAME SLIP */
@@ -23,14 +22,10 @@ betting
     })
 
     // update game slip
-    .patch((req, res) => {
-        res.json({ id: req.params.id })
-    })
+   .patch(VERIFY_AUTH_TOKEN, updateGameSlip)
 
-    //delete game slip
-    .delete((req, res) => {
-        res.json({ id: req.params.id })
-    })
+   // Cancel bet
+   .delete(VERIFY_AUTH_TOKEN)
 
 //middelware
 // code here...

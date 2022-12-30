@@ -1,10 +1,11 @@
 const { Bets, BettingSlip } = require('../model/betslip.model')
+const {Wallet} = require('../model/wallet.model')
 
 
 const viewBets = async (req, res) => {
   try {
     const betHistory = await Bets.find({ userID: req.bearer.payload._id },
-      { stake: 1, betSlip: 1, betDate: 1 })
+      { stake: 1, betSlip: 1, betDate: 1, gameSlip: 1 })
 
     // query betslip status
     const betStatus = BettingSlip.findOne({ _id: betHistory.gameSlip })
@@ -40,6 +41,14 @@ const placeBet = (req, res) => {
 
     games.save()
       .then(data => {
+        /**
+         * Get wallet balance
+         * Check if user has sufficent balance to place bet?
+         *  Substract stake from balance
+         *  update new wallet balance
+         * else:send 400 insufficent balance
+         */
+
         res.status(201).json({
           status: true,
           message: "OK: Bet Placed!"
@@ -58,7 +67,45 @@ const placeBet = (req, res) => {
   }
 }
 
+const updateGameSlip = async (req, res) => {
+  try {
+    const previousGameSlip = await Bets.find({ _id: req.body._id });
+    const previousStake = previousGameSlip.stake;
+    const currentStake = parseInt(req.body.stake);
+
+    const balanceStake = currentStake - previousStake
+    /**
+     * Get wallet balance
+     * check if user has sufficinet funds?
+     *   Wallet balance + balanceStake
+     *   update wallet balance
+     *  else: send 401 status code: Insufficient balance
+     */
+
+  }
+  catch (e) {
+    res.status(501).json({
+      status: false,
+      message: e.message
+    })
+  }
+}
+
+const cancelBet = async (req, res) => {
+  try {
+    await Bets.findOneAndDelete({_id: req.body._id})
+    
+  } catch (e) {
+    res.status(501).json({
+      status: false,
+      message: e.message
+    })
+  }
+}
+
 module.exports = {
   viewBets,
-  placeBet
+  placeBet,
+  updateGameSlip,
+  cancelBet
 }

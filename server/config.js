@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const { mongoose } = require("mongoose");
 
 mongoose.connect(process.env.SERVER_URI, {
 	useNewUrlParser: true,

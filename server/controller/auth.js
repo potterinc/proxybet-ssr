@@ -3,8 +3,9 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const { proxyMailer, SIGN_AUTH_TOKEN, RESET_CODE, resetTimeout } = require("./auth.module");
-
 const User = require('../model/user.model');
+const { Wallet } = require('../model/wallet.model');
+
 
 // User registration
 const newUser = (req, res) => {
@@ -26,6 +27,11 @@ const newUser = (req, res) => {
             .then(user => {
                 user.password = undefined
 
+                // CREATE USER WALLET
+                const userWallet = new Wallet({
+                    userID: user._id
+                }).save()
+
                 res.status(201).json({
                     message: "Registration Successful",
                     status: true,
@@ -38,7 +44,7 @@ const newUser = (req, res) => {
                 <p style="text-align:center">
                 Thank you for signing up with ProxyBET, we're so happy to have you
                 on board. You are now one step closer to becoming a bet king!<br>
-                Your account is Activated!</p>
+                Your account has been Activated!</p>
                 
                 <div style="text-align:center; margin: 50px 0">
                 <a 
@@ -64,6 +70,7 @@ const newUser = (req, res) => {
                 <p>
                 `
                 proxyMailer('One step closer to unlimited winning', mail, user.email)
+                
             })
             .catch(e => {
                 if (e.name == 'ValidationError') {
