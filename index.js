@@ -3,7 +3,7 @@ const express = require('express')
 const path = require('path')
 
 const authentication = require('./server/routes/auth.route')
-const betSlip = require('./server/routes/betslip.route')
+const betSlip = require('./server/routes/ticket.route')
 const betting = require('./server/routes/bets.route')
 const wallet = require('./server/routes/wallet.route')
 const user = require('./server/routes/user.route')

@@ -21,7 +21,7 @@ const BetSlips = new betSlipSchema({
 			type: Number,
 			required: true
 		},
-		status: {
+		gameStatus: {
 			type: String,
 			required: true
 		},
@@ -31,7 +31,7 @@ const BetSlips = new betSlipSchema({
 			required: true
 		}
 	}],
-	status: {
+	slipStatus: {
 		type: String,
 		default: 'Open'
 	},
@@ -44,7 +44,6 @@ const BetSlips = new betSlipSchema({
 		default: Date.now
 	}
 })
-
 /** PLACING OF BETS*/
 
 const bettingSchema = mongoose.Schema

@@ -1,7 +1,7 @@
 const { Bets, BettingSlip } = require('../model/betslip.model')
-const {Wallet} = require('../model/wallet.model')
+const { Wallet } = require('../model/wallet.model')
 
-
+// View all bets
 const viewBets = async (req, res) => {
   try {
     const betHistory = await Bets.find({ userID: req.bearer.payload._id },
@@ -14,7 +14,7 @@ const viewBets = async (req, res) => {
           message: 'No bet record(s) found'
         })
 
-        res.status(200).render('view-bets', {
+        res.status(200).render('view.bets', {
           slipResult: betStatus.result,
           betHistory,
         })
@@ -31,29 +31,41 @@ const viewBets = async (req, res) => {
   }
 }
 
-const placeBet = (req, res) => {
+// Place a bet
+const placeBet = async (req, res) => {
+  const games = new Bets({
+    userID: req.bearer.payload._id,
+    stake: parseInt(req.body.stake),
+    gameSlip: req.body.gameSlip
+  })
+
   try {
-    const games = new Bets({
-      userID: req.bearer.payload._id,
-      stake: req.body.stake,
-      gameSlip: req.body.gameSlip
+    const walletBalance = await Wallet.find({ userID: games.userID }, {
+      balance: 1
     })
+    if (games.stake > walletBalance.balance) {
+      res.status(400).json({
+        status: false,
+        message: "ERROR: Insufficient funds",
+      })
+      return
+    }
+    else {
+      let newBalance = games.stake
+      res.status(201).json({
+        status: true,
+        message: "OK: Bet Placed!",
+      })
+    }
+    /**
+     * Get wallet balance
+     * Check if user has sufficent balance to place bet?
+     *  Substract stake from balance
+     *  update new wallet balance
+       * else:send 400 insufficent balance
+       */
 
     games.save()
-      .then(data => {
-        /**
-         * Get wallet balance
-         * Check if user has sufficent balance to place bet?
-         *  Substract stake from balance
-         *  update new wallet balance
-         * else:send 400 insufficent balance
-         */
-
-        res.status(201).json({
-          status: true,
-          message: "OK: Bet Placed!"
-        })
-      })
       .catch(err => {
         res.status(400).json({
           status: false,
@@ -67,6 +79,7 @@ const placeBet = (req, res) => {
   }
 }
 
+// Update Game slip
 const updateGameSlip = async (req, res) => {
   try {
     const previousGameSlip = await Bets.find({ _id: req.body._id });
@@ -91,10 +104,15 @@ const updateGameSlip = async (req, res) => {
   }
 }
 
+// Cancel a bet
 const cancelBet = async (req, res) => {
   try {
-    await Bets.findOneAndDelete({_id: req.body._id})
-    
+    await Bets.findOneAndDelete({ _id: req.body._id })
+
+    /**
+     * Refund stake
+     */
+
   } catch (e) {
     res.status(501).json({
       status: false,
@@ -103,9 +121,45 @@ const cancelBet = async (req, res) => {
   }
 }
 
+// Generate bet slip
+const ticketSlip = async (req, res) => {
+  try {
+  const slip = new BettingSlip({
+    game: [{
+      HTeam: req.body.HTeam,
+      ATeam: req.body.ATeam,
+      betOption: req.body.betOptions,
+      betOdds: req.body.odds,
+      gameStatus: req.body.gameStatus,
+      startTime: req.body.matchTime
+    }],
+    userStakeLimit: req.body.stakeLimit,
+    maximumStake: req.body.maxStake,
+    totalOdds: req.body.odds
+  })
+    await slip.save()
+    .then(data =>{
+      res.status(401).json({
+        status: true,
+        message: "Ticket Generated"
+      })
+    })
+    .catch(err =>{
+      res.status(500).json({
+        status: false,
+        message: err.message
+      })
+    })
+  }
+  catch (e) {
+
+  }
+}
+
 module.exports = {
   viewBets,
   placeBet,
   updateGameSlip,
-  cancelBet
+  cancelBet,
+  ticketSlip
 }
