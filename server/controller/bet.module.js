@@ -15,7 +15,7 @@ const viewBets = async (req, res) => {
         })
 
         res.status(200).render('view.bets', {
-          slipResult: betStatus.result,
+          betTicket: betStatus,
           betHistory,
         })
       })
@@ -123,20 +123,13 @@ const cancelBet = async (req, res) => {
 
 // Generate bet slip
 const ticketSlip = async (req, res) => {
-  try {
   const slip = new BettingSlip({
-    game: [{
-      HTeam: req.body.HTeam,
-      ATeam: req.body.ATeam,
-      betOption: req.body.betOptions,
-      betOdds: req.body.odds,
-      gameStatus: req.body.gameStatus,
-      startTime: req.body.matchTime
-    }],
+    games: req.body.matches, // Array of objects
     userStakeLimit: req.body.stakeLimit,
     maximumStake: req.body.maxStake,
-    totalOdds: req.body.odds
+    totalOdds: req.body.totalOdds
   })
+  try {
     await slip.save()
     .then(data =>{
       res.status(401).json({

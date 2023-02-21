@@ -4,33 +4,31 @@ const { mongoose } = require('../config')
 /** BET SLIPS */
 const betSlipSchema = mongoose.Schema
 const BetSlips = new betSlipSchema({
-	game: [{
-		HTeam: {
-			type: String,
-			required: true
-		},
-		ATeam: {
-			type: String,
-			required: true
-		},
-		betOption: {
-			type: String,
-			required: true
-		},
-		betOdds: {
-			type: Number,
-			required: true
-		},
-		gameStatus: {
-			type: String,
-			required: true
-		},
-		result: Boolean,
-		startTime: {
-			type: Date,
-			required: true
-		}
-	}],
+	games: Schema.Types.Mixed,
+
+	// 	HTeam: {
+	// 		type: String,
+	// 		required: true
+	// 	},
+	// 	ATeam: {
+	// 		type: String,
+	// 		required: true
+	// 	},
+	// 	betOption: {
+	// 		type: String,
+	// 		required: true
+	// 	},
+	// 	betOdds: {
+	// 		type: Number,
+	// 		required: true
+	// 	},
+	// 	gameStatus: {
+	// 		type: String,
+	// 		required: true
+	// 	},
+	// 	matchResult: Boolean,
+	// 	startTime: String
+	// }],
 	slipStatus: {
 		type: String,
 		default: 'Open'
