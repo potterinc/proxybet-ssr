@@ -122,22 +122,21 @@ const cancelBet = async (req, res) => {
 }
 
 // Generate bet slip
-const ticketSlip = async (req, res) => {
+const newTicketSlip = async (req, res) => {
   const slip = new BettingSlip({
     games: req.body.matches, // Array of objects
     userStakeLimit: req.body.stakeLimit,
-    maximumStake: req.body.maxStake,
-    totalOdds: req.body.totalOdds
+    maximumStake: req.body.maxStake
   })
   try {
     await slip.save()
-    .then(data =>{
+      .then(data => {
       res.status(401).json({
         status: true,
         message: "Ticket Generated"
       })
     })
-    .catch(err =>{
+      .catch(err => {
       res.status(500).json({
         status: false,
         message: err.message
@@ -149,10 +148,51 @@ const ticketSlip = async (req, res) => {
   }
 }
 
+// View all bet ticket
+const viewAllTickets = async (req, res) => {
+  try {
+
+    await BettingSlip.find()
+      .then(data => {
+        res.status(200).render('view-ticket', {
+          tickets: data,
+          totalOdds: TOTAL_ODDS(data),
+        })
+      })
+
+  } catch (e) {
+    res.status(500).json({
+      status: false,
+      message: e.message
+    })
+  }
+}
+
+/**
+ * Sum Match odds
+ * 
+ * @param {object | ArrayBuffer} data 
+ * @returns Number
+ */
+const TOTAL_ODDS = data => {
+  let sum = 0;
+  let totalOdds = [];
+  data.forEach(slip => {
+
+    slip.games.forEach(game => {
+      sum += game.odds
+    })
+    totalOdds.push(sum)
+
+  });
+  return totalOdds
+}
+
 module.exports = {
+  ticketSlip: newTicketSlip,
+  ViewTickets: viewAllTickets,
   viewBets,
   placeBet,
   updateGameSlip,
-  cancelBet,
-  ticketSlip
+  cancelBet
 }
