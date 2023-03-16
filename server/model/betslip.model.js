@@ -4,7 +4,8 @@ const { mongoose } = require('../config')
 /** BET SLIPS */
 const betSlipSchema = mongoose.Schema
 const BetSlips = new betSlipSchema({
-	games: Schema.Types.Mixed,
+
+	games: [Schema.Types.Mixed],
 
 	// 	HTeam: {
 	// 		type: String,
@@ -35,7 +36,10 @@ const BetSlips = new betSlipSchema({
 	},
 	userStakeLimit: Number,
 	maximumStake: Number,
-	result: Boolean,
+	result: {
+		type: Boolean,
+		default: false
+	},
 	totalOdds: Number,
 	dateIssued: {
 		type: Date,
@@ -60,6 +64,7 @@ const Bet = new bettingSchema({
 
 const Bets = mongoose.model('Bets', Bet)
 const BettingSlip = mongoose.model('BetSlips', BetSlips)
+
 
 module.exports = {
 	Bets,
