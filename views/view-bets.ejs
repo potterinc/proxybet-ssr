@@ -1,0 +1,87 @@
+<% betHistory.forEach((history, i) => { %>
+    <div class="card card-bg my-2">
+        <div class="card-body py-0">
+            <div class="row border-bottom">
+                <div class="col-md-2"></div>
+                <div class="col-md-8 text-center header-text">
+                    <span> Bet Slip: <%=history.gameSlip %> </span><br>
+                    <span class="badge">
+                        <span class="">Posted: </span>
+                        <span class="col-md-4 text-secondary"><%=mDate %></span>
+                    </span>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-md-12">
+                    <p class="row text-center border-bottom my-0">
+                        <span class="col-12 header-text white-text">Matches </span>
+                    </p>
+                    <div class="row border-bottom text-center py-2 my-0">
+                        <% history.games.forEach((game)=>{ %>
+
+                            <div class="px-1 d-flex justify-content-between">
+                                <span class="text-secondary badge"><%=game.matchTime %></span>
+                                <span class=""><strong><%=game.home %></strong></span>
+                                <span class="text-warning badge">VS</span>
+                                <span class=""><strong><%= game.away %></strong></span>
+                                <span class="text-info badge"><%= game.betOptions %> - <%= game.odds %>
+                                    <% if(game.matchResult) { %>
+                                        <span class="text-success"><i class="bi bi-check-circle"></i></span>
+                                    <% } else { %>
+                                        <span class="text-danger"><i class="bi bi-x-circle"></i></span>
+                                    <% } %>
+                                </span>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12 border-left border-right border-bottom">
+                    <p class="row border-bottom text-center my-0">
+                        <span class="col-md-12 header-text white-text">Bet Analysis </span>
+                    </p>
+                    <p class="row border-bottom my-0">
+                        <span class="col-7">Total Odds:</span>
+                        <span class="col-5 border-left-sm text-info badge"><%= totalOdds[i] %></span>
+                    </p>
+                    <p class="row border-bottom my-0 d-flex justify-content-between">
+                        <span class="col-7">Stake Limit:</span>
+                        <span class="col-5 border-left-sm text-primary badge"><%=history.stakeLimit %></span>
+                    </p>
+                    <p class="row border-bottom my-0 d-flex justify-content-between">
+                        <span class="col-7">Ticket Limit:</span>
+                        <span class="col-5 border-left-sm text-primary badge">Unlimited</span>
+                    </p>
+                    <p class="row border-bottom my-0 d-flex justify-content-between">
+                        <span class="col-7">Status: </span>
+                        <span class="col-5 border-left-sm text-warning badge"><%=history.slipStatus %>></span>
+                    </p>
+                    <p class="row border-bottom my-0 d-flex justify-content-between">
+                        <span class="col-7">Ticket Bonus: </span>
+                        <span class="col-5 border-left-sm text-success badge">5%</span>
+                    </p>
+                    <p class="row border-bottom my-0 d-flex justify-content-between">
+                        <span class="col-7">Result: </span>
+                        <span class="col-5 border-left-sm text-secondary badge"></span>
+                        <%if(history.result){%>
+                            <span class="col-5 border-left-sm text-secondary badge">
+                                <i class="bi bi-check-circle"></i>
+                            </span>
+                            
+                          <% } %>
+                          <%if(!history.result){%>
+                            <span class="col-5 border-left-sm text-danger badge">
+                                <i class="bi bi-x-check-circle"></i>
+                            </span>
+                          <% } %>
+                    </p>
+                    <div class="row d-flex justify-content-between">
+                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-danger my-2">Delete</a>
+                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-primary my-2">Edit Bet</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+    <% }) %>

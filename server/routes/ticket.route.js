@@ -1,5 +1,5 @@
 const express = require('express');
-const { ticketSlip } = require('../controller/bet.module');
+const { ticketSlip, ViewTickets } = require('../controller/bet.module');
 const betSlip = express.Router()
 
 /** BETTING ROUTE */
@@ -7,9 +7,7 @@ betSlip
     .route('/')
 
     // view all betslips
-    .get((req, res) => {
-        res.json({ status: 'you have placed 0 bets this week' })
-    })
+    .get(ViewTickets)
 
     // Generate betting slip
     .post(ticketSlip)
