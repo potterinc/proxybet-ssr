@@ -12,7 +12,7 @@ const User = require('../model/user.model')
  * @returns String
  */
 const SIGN_AUTH_TOKEN = (payload, key) => {
-    return jwt.sign({ payload }, key, { expiresIn: '7d' })
+    return jwt.sign({ payload }, key, { expiresIn: '15m' })
 }
 
 /**

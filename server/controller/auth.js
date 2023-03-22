@@ -70,7 +70,7 @@ const newUser = (req, res) => {
                 <p>
                 `
                 proxyMailer('One step closer to unlimited winning', mail, user.email)
-                
+
             })
             .catch(e => {
                 if (e.name == 'ValidationError') {

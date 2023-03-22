@@ -8,47 +8,23 @@ const viewBets = async (req, res) => {
       { stake: 1, betDate: 1, gameSlip: 1 })
 
       .then(history => {
-        let sumOfOdds = []
-        let sum = 0;
-        
+
         history.forEach((slip, i) => {
-          BettingSlip.find(slip.gameSlip)
-            .then(data => {
-             let sumOdds = function() {
-                let matches = data.games;
-                matches.forEach(odd => {
-                  sum += odd.odds;
-                })
-                sumOfOdds.push(sum)
-                console.log(sumOfOdds);
-                return sumOfOdds;
-              }
-              
-              res.status(200).render('view-bets', {
+          BettingSlip.findById(slip.gameSlip, (err, data)=>{
+            if(err) return res.status(501).json({
+              status: false,
+              message: err.message
+            })
+            res.status(200).render('view-bets', {
                 betTicket: data,
                 betHistory: history,
                 mDate: data.dateIssued.toDateString(),
-                totalOdds: sumOdds()
+                sumOdd: SUM_ODDS(data)
               })
-            })
-            .catch(err => {
-
-            })
+          })
         })
       })
 
-    // query betslip status
-
-    // BettingSlip.findOne(betHistory.gameSlip)
-    //   .then(data => {
-    //     res.status(200).render('view-bets', {
-    //       betTicket: data,
-    //       betHistory,
-    //       mDate: '',
-    //       // totalOdds: TOTAL_ODDS(data)
-    //     })
-    //     console.log(betHistory.gameSlip);
-    //   })
   } catch (e) {
     res.status(500).json({
       message: e.message
