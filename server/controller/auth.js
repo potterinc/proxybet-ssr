@@ -86,9 +86,8 @@ const newUser = (req, res) => {
                     }
                 }
                 else {
-                    res.status(405).json({
-                        // message: "ERROR: Email or phone already exists in our "
-                        message: e.message
+                    res.status(409).json({
+                        message: "ERROR: This user already exists"
                     })
                 }
                 // if (e.name = 'MongoServerError') {

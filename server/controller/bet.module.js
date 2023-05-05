@@ -189,6 +189,20 @@ const TOTAL_ODDS = data => {
   return totalOdds
 }
 
+const SUM_ODDS = data => {
+
+  let sumOfOdds = []
+  let sum = 0;
+
+
+   data.games.forEach(odd => {
+    sum += odd.odds;
+  });
+  sumOfOdds.push(sum)
+  console.log(sumOfOdds)
+  return sumOfOdds;
+}
+
 module.exports = {
   ticketSlip: newTicketSlip,
   ViewTickets: viewAllTickets,
