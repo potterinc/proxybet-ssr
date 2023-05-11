@@ -36,10 +36,6 @@ const userModel = new UserSchema({
         required: [true, "Phone Number is required"]
     },
     role: String,
-    dateRegistered: {
-        type: Date,
-        default: Date.now,
-    },
     Auth: {
         token: String
     },
@@ -49,6 +45,6 @@ const userModel = new UserSchema({
         Address: String,
         DOB: Date
     }
-});
+},{timestamps:true});
 
 module.exports = mongoose.model('Users', userModel);

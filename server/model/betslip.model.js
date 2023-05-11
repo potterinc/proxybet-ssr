@@ -40,12 +40,8 @@ const BetSlips = new betSlipSchema({
 		type: Boolean,
 		default: false
 	},
-	totalOdds: Number,
-	dateIssued: {
-		type: Date,
-		default: Date.now
-	}
-})
+	totalOdds: Number
+}, {timestamps: true})
 /** PLACING OF BETS*/
 
 const bettingSchema = mongoose.Schema
@@ -55,12 +51,11 @@ const Bet = new bettingSchema({
 		type: Number,
 		required: [true, 'Your stake is required']
 	},
-	gameSlip: Schema.Types.ObjectId,
-	betDate: {
-		type: Date,
-		default: Date.now
+	gameSlip: {
+		type: Schema.Types.ObjectId,
+		ref: 'BetSlips'
 	}
-})
+},{timestamps:true})
 
 const Bets = mongoose.model('Bets', Bet)
 const BettingSlip = mongoose.model('BetSlips', BetSlips)

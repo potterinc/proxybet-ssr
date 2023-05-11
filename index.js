@@ -3,11 +3,11 @@ const express = require('express')
 const path = require('path')
 const cors = require('cors')
 
-const authentication = require('./server/routes/auth.route')
-const betSlip = require('./server/routes/ticket.route')
-const betting = require('./server/routes/bets.route')
-const wallet = require('./server/routes/wallet.route')
-const user = require('./server/routes/user.route')
+const authentication = require('./server/routes/auth.routes')
+const betSlip = require('./server/routes/ticket.routes')
+const betting = require('./server/routes/bets.routes')
+const wallet = require('./server/routes/wallet.routes')
+const user = require('./server/routes/user.routes')
 
 const app = express()
 const PORT = process.env.PORT || 5000

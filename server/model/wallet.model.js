@@ -14,11 +14,7 @@ const Payments = new paymentSchema({
 	},
 	txID: String, // Transaction reference from Payment Merchant
 	txStatus: String, // Payment status from Merchant
-	transactionDate: {
-		type: Date,
-		default: Date.now
-	}
-})
+}, {timestamps:true})
 
 // WALLET
 
@@ -28,12 +24,8 @@ const Balance = new walletSchema({
 	balance: {
 		type: Number,
 		default: 0
-	},
-	lastUpdated: {
-		type: Date,
-		default: Date.now
 	}
-})
+},{timestamps: true})
 
 
 const Transactions = mongoose.model('Transactions', Payments)
