@@ -9,37 +9,41 @@ const { Wallet } = require('../model/wallet.model');
 
 // User registration
 const newUser = (req, res) => {
-    bcrypt.hash(req.body.password, 3, (err, encryptedPassword) => {
-        if (err) {
-            res.status(400).json({
-                message: err
-            })
-        }
-        const user = new User({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            password: encryptedPassword,
-            phone: req.body.phone,
-            role: process.env.DEFAULT_ROLE
-        });
-        user.save()
-            .then(user => {
-                user.password = undefined
-
-                // CREATE USER WALLET
-                const userWallet = new Wallet({
-                    userID: user._id
-                }).save()
-
-                res.status(201).json({
-                    message: "Registration Successful",
-                    status: true,
-                    token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
+    try {
+        bcrypt.hash(req.body.password, 3, (err, encryptedPassword) => {
+            if (err) {
+                res.status(400).json({
+                    message: err
                 })
-                const d = new Date()
-                let year = d.getFullYear()
-                let mail = `
+            }
+            const user = new User({
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                password: encryptedPassword,
+                phone: req.body.phone,
+                role: process.env.DEFAULT_ROLE
+            });
+            user.save()
+                .then(user => {
+                    delete user.password
+
+                    // CREATE USER WALLET
+                    const userWallet = new Wallet({
+                        userID: user._id
+                    }).save()
+
+                    res.status(201).json({
+                        message: "Registration Successful",
+                        isLoggedIn: true,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email,
+                        token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
+                    })
+                    const d = new Date()
+                    let year = d.getFullYear()
+                    let mail = `
                 <h1 style="text-align:center">Welcome ${user.firstName},</h1>
                 <p style="text-align:center">
                 Thank you for signing up with ProxyBET, we're so happy to have you
@@ -69,43 +73,50 @@ const newUser = (req, res) => {
                 </small>
                 <p>
                 `
-                proxyMailer('One step closer to unlimited winning', mail, user.email)
+                    proxyMailer('One step closer to unlimited winning', mail, user.email)
 
-            })
-            .catch(e => {
-                if (e.name == 'ValidationError') {
-                    if (e.errors['email']) {
-                        res.status(400).json({
-                            message: e.errors['email'].message
+                })
+                .catch(e => {
+                    if (e.name == 'ValidationError') {
+                        if (e.errors['email']) {
+                            res.status(400).json({
+                                message: e.errors['email'].message
+                            })
+                        }
+                        if (e.errors['phone']) {
+                            res.status(400).json({
+                                message: e.errors['phone'].message
+                            })
+                        }
+                    }
+                    else {
+                        res.status(409).json({
+                            message: "ERROR: This user already exists"
                         })
                     }
-                    if (e.errors['phone']) {
-                        res.status(400).json({
-                            message: e.errors['phone'].message
-                        })
-                    }
-                }
-                else {
-                    res.status(409).json({
-                        message: "ERROR: This user already exists"
-                    })
-                }
-                // if (e.name = 'MongoServerError') {
-                //     if (e.keyValue['email']) {
-                //         res.status(405).json({
-                //             message: `${e.keyValue.email} already exist`
-                //         })
-                //     }
-                //     if (e.keyValue['phone']) {
-                //         res.status(405).json({
-                //             message: `${e.keyValue.phone} already exist`
-                //         })
-                //     }
-                // }
+                    // if (e.name = 'MongoServerError') {
+                    //     if (e.keyValue['email']) {
+                    //         res.status(405).json({
+                    //             message: `${e.keyValue.email} already exist`
+                    //         })
+                    //     }
+                    //     if (e.keyValue['phone']) {
+                    //         res.status(405).json({
+                    //             message: `${e.keyValue.phone} already exist`
+                    //         })
+                    //     }
+                    // }
 
 
-            })
-    })
+                })
+        })
+    }
+    catch (err) {
+        res.send(500).json({
+            status: false,
+            message: err.message
+        })
+    }
 }
 
 //User login
@@ -121,6 +132,10 @@ const login = (req, res) => {
 
                     res.status(200).json({
                         message: "Login Successful",
+                        isLoggedIn: true,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        email: user.email,
                         token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                     })
                 } else {
@@ -216,7 +231,7 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
             next()
         });
     } else {
-        res.sendStatus(403)
+        res.status(403).redirect('auth.html')
     }
 }
 

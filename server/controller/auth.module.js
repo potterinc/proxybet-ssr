@@ -46,11 +46,9 @@ const proxyMailer = (subject, msgContent, recepient) => {
 
     mailer.sendMail(mailOptions, function (error, info) {
         if (error) {
-            console.log(error);
-            res.sendStatus(501)
+            return 'Confirmation mail not sent'
         } else {
-            console.log('Email sent: ' + info.response);
-            res.sendStatus(200)
+            return 'Mail sent'
         }
     });
 }

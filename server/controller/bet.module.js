@@ -4,24 +4,14 @@ const { Wallet } = require('../model/wallet.model')
 // View all bets
 const viewBets = async (req, res) => {
   try {
-    const betHistory = await Bets.find({ userID: req.bearer.payload._id },
+    await Bets.find({ userID: req.bearer.payload._id },
       { stake: 1, betDate: 1, gameSlip: 1 })
-
-      .then(history => {
-
-        history.forEach((slip, i) => {
-          BettingSlip.findById(slip.gameSlip, (err, data)=>{
-            if(err) return res.status(501).json({
-              status: false,
-              message: err.message
-            })
-            res.status(200).render('view-bets', {
-                betTicket: data,
-                betHistory: history,
-                mDate: data.dateIssued.toDateString(),
-                sumOdd: SUM_ODDS(data)
-              })
-          })
+      .populate('gameSlip')
+      .exec(function (err, history) {
+        if (err) return handleError;
+        console.log(history);
+        res.status(200).render('view-bets', {
+          betHistory: history
         })
       })
 
@@ -39,45 +29,38 @@ const placeBet = async (req, res) => {
     stake: parseInt(req.body.stake),
     gameSlip: req.body.gameSlip
   })
-
   try {
-    const walletBalance = await Wallet.find({ userID: games.userID }, {
-      balance: 1
+    await Wallet.findOne({ userID: games.userID }, {
+      balance: 1, _id: 1
+    }).then(wallet => {
+      let newBalance = wallet.balance - games.stake
+      
+      if (newBalance < 0) {
+        throw Error
+      }
+      else {
+        Wallet.findByIdAndUpdate(wallet._id, { balance: newBalance }).exec()
+        res.status(201).json({
+          status: true,
+          message: "OK: Bet Placed!",
+        })
+      }
+    }).catch(e => {
+      res.status(402).json({
+        message: 'Insufficient funds!'
+      })
+
     })
-    if (games.stake > walletBalance.balance) {
-      res.status(400).json({
-        status: false,
-        message: "ERROR: Insufficient funds",
-      })
-      return
-    }
-    else {
-      let newBalance = games.stake
-      res.status(201).json({
-        status: true,
-        message: "OK: Bet Placed!",
-      })
-    }
-    /**
-     * Get wallet balance
-     * Check if user has sufficent balance to place bet?
-     *  Substract stake from balance
-     *  update new wallet balance
-       * else:send 400 insufficent balance
-       */
 
     games.save()
-      .catch(err => {
-        res.status(400).json({
-          status: false,
-          message: err.message
-        })
-      })
+
   } catch (e) {
     res.status(500).json({
-      message: e.message
+      status: false,
+      message: err.message
     })
   }
+
 }
 
 // Update Game slip
@@ -167,40 +150,6 @@ const viewAllTickets = async (req, res) => {
       message: e.message
     })
   }
-}
-
-/**
- * Sum Match odds
- * 
- * @param {object | ArrayBuffer} data 
- * @returns Number
- */
-const TOTAL_ODDS = data => {
-  let sum = 0;
-  let totalOdds = [];
-  data.forEach(slip => {
-
-    slip.games.forEach(game => {
-      sum += game.odds
-    })
-    totalOdds.push(sum)
-
-  });
-  return totalOdds
-}
-
-const SUM_ODDS = data => {
-
-  let sumOfOdds = []
-  let sum = 0;
-
-
-   data.games.forEach(odd => {
-    sum += odd.odds;
-  });
-  sumOfOdds.push(sum)
-  console.log(sumOfOdds)
-  return sumOfOdds;
 }
 
 module.exports = {
