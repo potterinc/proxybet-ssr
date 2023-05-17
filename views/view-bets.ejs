@@ -1,13 +1,13 @@
-<% betHistory.forEach((history, i) => { %>
+<% betHistory.forEach(history => { %>
     <div class="card card-bg my-2">
         <div class="card-body py-0">
             <div class="row border-bottom">
                 <div class="col-md-2"></div>
                 <div class="col-md-8 text-center header-text">
-                    <span> Bet Slip: <%=history.gameSlip %> </span><br>
+                    <span> Bet Slip: <%=history.gameSlip._id %> </span><br>
                     <span class="badge">
                         <span class="">Posted: </span>
-                        <span class="col-md-4 text-secondary"><%=mDate %></span>
+                        <span class="col-md-4 text-secondary"><%=history.gameSlip.createdAt.toDateString() %></span>
                     </span>
                 </div>
                 <div class="col-md-2"></div>
@@ -18,7 +18,7 @@
                         <span class="col-12 header-text white-text">Matches </span>
                     </p>
                     <div class="row border-bottom text-center py-2 my-0">
-                        <% history.games.forEach(game => { %>
+                        <% history.gameSlip.games.forEach(game => { %>
 
                             <div class="px-1 d-flex justify-content-between">
                                 <span class="text-secondary badge"><%=game.matchTime %></span>
@@ -36,11 +36,11 @@
                     </p>
                     <p class="row border-bottom my-0">
                         <span class="col-7">Total Odds:</span>
-                        <span class="col-5 border-left-sm text-info badge"><%= sumOdd %></span>
+                        <span class="col-5 border-left-sm text-info badge"><%= history.gameSlip.totalOdds %></span>
                     </p>
                     <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Stake Limit:</span>
-                        <span class="col-5 border-left-sm text-primary badge"><%=history.stakeLimit %></span>
+                        <span class="col-7">Stake:</span>
+                        <span class="col-5 border-left-sm text-primary badge"><%=history.stake %></span>
                     </p>
                     <p class="row border-bottom my-0 d-flex justify-content-between">
                         <span class="col-7">Ticket Limit:</span>
@@ -48,7 +48,7 @@
                     </p>
                     <p class="row border-bottom my-0 d-flex justify-content-between">
                         <span class="col-7">Status: </span>
-                        <span class="col-5 border-left-sm text-warning badge"><%=history.slipStatus %></span>
+                        <span class="col-5 border-left-sm text-warning badge"><%=history.gameSlip.slipStatus %></span>
                     </p>
                     <p class="row border-bottom my-0 d-flex justify-content-between">
                         <span class="col-7">Ticket Bonus: </span>
@@ -57,13 +57,13 @@
                     <p class="row border-bottom my-0 d-flex justify-content-between">
                         <span class="col-7">Result: </span>
                         <span class="col-5 border-left-sm text-secondary badge"></span>
-                        <%if(history.result){%>
+                        <%if(history.gameSlip.result){%>
                             <span class="col-5 border-left-sm text-secondary badge">
                                 <i class="bi bi-check-circle"></i>
                             </span>
                             
                           <% } %>
-                          <%if(!history.result){%>
+                          <%if(!history.gameSlip.result){%>
                             <span class="col-5 border-left-sm text-danger badge">
                                 <i class="bi bi-x-check-circle"></i>
                             </span>

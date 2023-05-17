@@ -1,7 +1,7 @@
 const { Bets, BettingSlip } = require('../model/betslip.model')
 const { Wallet } = require('../model/wallet.model')
 
-// View all bets
+// View all bets by a user
 const viewBets = async (req, res) => {
   try {
     await Bets.find({ userID: req.bearer.payload._id },
@@ -9,7 +9,6 @@ const viewBets = async (req, res) => {
       .populate('gameSlip')
       .exec(function (err, history) {
         if (err) return handleError;
-        console.log(history);
         res.status(200).render('view-bets', {
           betHistory: history
         })
@@ -132,15 +131,14 @@ const newTicketSlip = async (req, res) => {
   }
 }
 
-// View all bet ticket
+// View all bet tickets for admin
 const viewAllTickets = async (req, res) => {
   try {
 
     await BettingSlip.find()
-      .then(data => {
+      .then(games => {
         res.status(200).render('view-ticket', {
-          tickets: data,
-          totalOdds: TOTAL_ODDS(data),
+          BetSlip: games,
         })
       })
 
@@ -154,7 +152,7 @@ const viewAllTickets = async (req, res) => {
 
 module.exports = {
   ticketSlip: newTicketSlip,
-  ViewTickets: viewAllTickets,
+  ViewAdminTickets: viewAllTickets,
   viewBets,
   placeBet,
   updateGameSlip,

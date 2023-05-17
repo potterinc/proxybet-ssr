@@ -38,6 +38,7 @@ const newUser = (req, res) => {
                         isLoggedIn: true,
                         firstName: user.firstName,
                         lastName: user.lastName,
+                        role: user.role,
                         email: user.email,
                         token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                     })
@@ -136,6 +137,7 @@ const login = (req, res) => {
                         firstName: user.firstName,
                         lastName: user.lastName,
                         email: user.email,
+                        role: user.role,
                         token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
                     })
                 } else {
