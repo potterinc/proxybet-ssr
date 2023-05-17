@@ -134,7 +134,13 @@ const newTicketSlip = async (req, res) => {
 // View all bet tickets for admin
 const viewAllTickets = async (req, res) => {
   try {
-
+    if(req.bearer.payload.role != 'Admin'){
+      res.status(403).json({
+        status:false,
+        message: "FORBIDDEN: You\'re not an Admin"
+      })
+    }
+      
     await BettingSlip.find()
       .then(games => {
         res.status(200).render('view-ticket', {

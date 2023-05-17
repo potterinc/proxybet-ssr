@@ -1,5 +1,6 @@
 const express = require('express');
-const { ticketSlip, ViewTickets } = require('../controller/bet.module');
+const { ticketSlip, ViewAdminTickets } = require('../controller/bet.module');
+const { VERIFY_AUTH_TOKEN } = require('../controller/auth');
 const betSlip = express.Router()
 
 /** BETTING ROUTE */
@@ -7,10 +8,10 @@ betSlip
     .route('/')
 
     // view all betslips
-    .get(ViewTickets)
+    .get(VERIFY_AUTH_TOKEN, ViewAdminTickets)
 
     // Generate betting slip
-    .post(ticketSlip)
+    .post(VERIFY_AUTH_TOKEN, ticketSlip)
 
 betSlip
     .route('/:id')
@@ -24,13 +25,13 @@ betSlip
     .patch((req, res) => {
         res.json({ id: req.params.id })
     })
-    
+
     //delete bet slip
     .delete((req, res) => {
         res.json({ id: req.params.id })
     })
 
-    //middelware
-    // code here...
+//middelware
+// code here...
 
 module.exports = betSlip

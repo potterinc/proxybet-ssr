@@ -1,4 +1,7 @@
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
 const express = require('express')
 const path = require('path')
 const cors = require('cors')
@@ -10,12 +13,12 @@ const wallet = require('./server/routes/wallet.routes')
 const user = require('./server/routes/user.routes')
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
 app.use(express.static(path.join(__dirname, "/public/proxyBet")))
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
-app.use(cors({origin: '*'}))
+app.use(cors({ origin: '*' }))
 
 // Routes
 app.use('/api/auth/', authentication)
