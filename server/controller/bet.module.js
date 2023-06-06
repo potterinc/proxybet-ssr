@@ -6,7 +6,7 @@ const viewBets = async (req, res) => {
   try {
     await Bets.find({ userID: req.bearer.payload._id },
       { stake: 1, betDate: 1, gameSlip: 1 })
-      .populate('gameSlip')
+      .populate('gameSlip').sort('-createdAt')
       .exec(function (err, history) {
         if (err) return handleError;
         res.status(200).render('view-bets', {
@@ -134,12 +134,6 @@ const newTicketSlip = async (req, res) => {
 // View all bet tickets for admin
 const viewAllTickets = async (req, res) => {
   try {
-    if(req.bearer.payload.role != 'Admin'){
-      res.status(403).json({
-        status:false,
-        message: "FORBIDDEN: You\'re not an Admin"
-      })
-    }
       
     await BettingSlip.find()
       .then(games => {

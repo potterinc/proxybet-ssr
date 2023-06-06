@@ -1,4 +1,4 @@
-<% BetSlip.forEach(game => { %>
+<% BetSlip.forEach(game=> { %>
 
     <div class="card card-bg my-2">
         <div class="card-body py-0">
@@ -7,7 +7,9 @@
                 <div class="col-md-8 text-center header-text">
                     <span> Bet Slip: <%=game._id %></span><br>
                     <span class="badge">
-                        <span class="">Posted: </span><span class="col-md-4 text-secondary"><%= game.createdAt.getHours() %>:<%=game.createdAt.getMinutes() %> </span>
+                        <span class="">Posted: </span><span class="col-md-4 text-secondary">
+                            <%= game.createdAt.getHours() %>:<%=game.createdAt.getMinutes() %>
+                        </span>
                     </span>
                 </div>
                 <div class="col-md-2"></div>
@@ -18,68 +20,84 @@
                         <span class="col-12 header-text white-text">Matches </span>
                     </p>
                     <div class="row border-bottom text-center py-2 my-0">
-                        <% game.games.forEach(match => { %>
+                        <% game.games.forEach(match=> { %>
 
-                            <div class="px-1 d-flex justify-content-between">
-                                <span class="text-secondary badge"><%=match.matchTime %></span>
-                                <span class=""><strong><%=match.home %></strong></span>
+                            <div class="px-1 d-flex justify-content-between small">
+                                <span class="text-secondary badge">
+                                    <%=match.matchTime %>
+                                </span>
+                                <span class=""><strong>
+                                        <%=match.home %>
+                                    </strong></span>
                                 <span class="text-warning badge">VS</span>
-                                <span class=""><strong><%= match.away %></strong></span>
-                                <span class="text-info badge"><%= match.betOptions %> - <%= match.odds %>
-                                    <% if(match.matchResult) { %>
-                                        <span class="text-success"><i class="bi bi-check-circle"></i></span>
-                                    <% } else { %>
-                                        <span class="text-danger"><i class="bi bi-x-circle"></i></span>
-                                    <% } %>
+                                <span class=""><strong>
+                                        <%= match.away %>
+                                    </strong></span>
+                                <span class="text-info badge">
+                                    <%= match.betOptions %> - <%= match.odds %>
+                                            <% if(match.matchResult) { %>
+                                                <span class="text-success"><i class="bi bi-check-circle"></i></span>
+                                                <% } else { %>
+                                                    <span class="text-danger"><i class="bi bi-x-circle"></i></span>
+                                                    <% } %>
                                 </span>
                             </div>
                             <% }) %>
                     </div>
-                <div class="col-lg-4 col-md-12 border-left border-right border-bottom">
-                    <p class="row border-bottom text-center my-0">
-                        <span class="col-md-12 header-text white-text">Bet Analysis </span>
-                    </p>
-                    <p class="row border-bottom my-0">
-                        <span class="col-7">Total Odds:</span>
-                        <span class="col-5 border-left-sm text-info badge"><%= game.totalOdds %></span>
-                    </p>
-                    <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Stake Limit:</span>
-                        <span class="col-5 border-left-sm text-primary badge"><%=game.userStakeLimit %></span>
-                    </p>
-                    <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Ticket Limit:</span>
-                        <span class="col-5 border-left-sm text-primary badge"><%=game.maximumStake %></span>
-                    </p>
-                    <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Status: </span>
-                        <span class="col-5 border-left-sm text-warning badge"><%= game.slipStatus %></span>
-                    </p>
-                    <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Ticket Bonus: </span>
-                        <span class="col-5 border-left-sm text-success badge">5%</span>
-                    </p>
-                    <p class="row border-bottom my-0 d-flex justify-content-between">
-                        <span class="col-7">Result: </span>
-                        <%if(game.result == 'true'){%>
-                            <span class="col-5 border-left-sm text-secondary badge">
-                                <i class="bi bi-check-circle"></i>
+                    <div class="col-lg-4 col-md-12 border-left border-right border-bottom">
+                        <p class="row border-bottom text-center my-0">
+                            <span class="col-md-12 header-text white-text">Bet Analysis </span>
+                        </p>
+                        <p class="row border-bottom my-0">
+                            <span class="col-7">Total Odds:</span>
+                            <span class="col-5 border-left-sm text-info badge">
+                                <%= game.totalOdds %>
                             </span>
-                            
-                          <% } else { %>
-                            <span class="col-5 border-left-sm text-danger badge">
-                                <i class="bi bi-x-check-circle"></i>
+                        </p>
+                        <p class="row border-bottom my-0 d-flex justify-content-between">
+                            <span class="col-7">Stake Limit:</span>
+                            <span class="col-5 border-left-sm text-primary badge">
+                                <%=game.userStakeLimit %>
                             </span>
-                          <% } %>
-                    </p>
-                    <div class="row">
-                        <span class="col-lg-2 col-md-4 col-sm-3"></span>
-                        <a class="col-lg-8 col-md-4 col-sm-6 btn btn-success my-3">Place Bet</a>
-                        <span class="col-lg-2 col-md-4 col-sm-3"></span>
+                        </p>
+                        <p class="row border-bottom my-0 d-flex justify-content-between">
+                            <span class="col-7">Ticket Limit:</span>
+                            <span class="col-5 border-left-sm text-primary badge">
+                                <%=game.maximumStake %>
+                            </span>
+                        </p>
+                        <p class="row border-bottom my-0 d-flex justify-content-between">
+                            <span class="col-7">Status: </span>
+                            <span class="col-5 border-left-sm text-warning badge">
+                                <%= game.slipStatus %>
+                            </span>
+                        </p>
+                        <p class="row border-bottom my-0 d-flex justify-content-between">
+                            <span class="col-7">Ticket Bonus: </span>
+                            <span class="col-5 border-left-sm text-success badge">5%</span>
+                        </p>
+                        <p class="row border-bottom my-0 d-flex justify-content-between">
+                            <span class="col-7">Result: </span>
+                            <%if(game.result=='true' ){%>
+                                <span class="col-5 border-left-sm text-secondary badge">
+                                    <i class="bi bi-check-circle"></i>
+                                </span>
+
+                                <% } else { %>
+                                    <span class="col-5 border-left-sm text-danger badge">
+                                        <i class="bi bi-x-check-circle"></i>
+                                    </span>
+                                    <% } %>
+                        </p>
+                        <div class="row">
+                            <span class="col-lg-2 col-md-4 col-sm-3"></span>
+                            <a class="col-lg-8 col-md-4 col-sm-6 btn btn-success my-3">Place Bet</a>
+                            <span class="col-lg-2 col-md-4 col-sm-3"></span>
+                        </div>
                     </div>
                 </div>
+                <div class="row"></div>
             </div>
-            <div class="row"></div>
         </div>
     </div>
     <% }) %>

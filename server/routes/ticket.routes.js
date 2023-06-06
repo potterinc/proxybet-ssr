@@ -8,7 +8,7 @@ betSlip
     .route('/')
 
     // view all betslips
-    .get(VERIFY_AUTH_TOKEN, ViewAdminTickets)
+    .get(ViewAdminTickets)
 
     // Generate betting slip
     .post(VERIFY_AUTH_TOKEN, ticketSlip)
