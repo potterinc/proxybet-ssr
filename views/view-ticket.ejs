@@ -30,16 +30,16 @@
                                         <%=match.home %>
                                     </strong></span>
                                 <span class="text-warning badge">VS</span>
-                                <span class=""><strong>
-                                        <%= match.away %>
-                                    </strong></span>
+                                <span class=""><strong><%= match.away %></strong></span>
                                 <span class="text-info badge">
                                     <%= match.betOptions %> - <%= match.odds %>
-                                            <% if(match.matchResult) { %>
-                                                <span class="text-success"><i class="bi bi-check-circle"></i></span>
-                                                <% } else { %>
-                                                    <span class="text-danger"><i class="bi bi-x-circle"></i></span>
-                                                    <% } %>
+                                        <% if(match.matchResult == 'win') { %>
+                                            <span class="text-success"><i class="bi bi-check-circle"></i></span>
+                                            <% } else if(match.matchResult == 'lost') { %>
+                                                <span class="text-danger"><i class="bi bi-x-circle"></i></span>
+                                            <% } else { %>
+                                                <span class="text-info"><i class="bi bi-question-circle"></i></span>
+                                            <%} %>
                                 </span>
                             </div>
                             <% }) %>
@@ -74,7 +74,7 @@
                         </p>
                         <p class="row border-bottom my-0 d-flex justify-content-between">
                             <span class="col-7">Ticket Bonus: </span>
-                            <span class="col-5 border-left-sm text-success badge">5%</span>
+                            <span class="col-5 border-left-sm text-success badge"><%=game.ticketBonus %></span>
                         </p>
                         <p class="row border-bottom my-0 d-flex justify-content-between">
                             <span class="col-7">Result: </span>
@@ -91,7 +91,10 @@
                         </p>
                         <div class="row">
                             <span class="col-lg-2 col-md-4 col-sm-3"></span>
-                            <a class="col-lg-8 col-md-4 col-sm-6 btn btn-success my-3">Place Bet</a>
+                            <a onclick="viewOneTicket('<%= game._id %>')"
+                                class="col-lg-8 col-md-4 col-sm-6 btn btn-success my-3"
+                                data-bs-toggle="modal" data-bs-target="#placebetModal">Place Bet
+                            </a>
                             <span class="col-lg-2 col-md-4 col-sm-3"></span>
                         </div>
                     </div>
@@ -99,5 +102,4 @@
                 <div class="row"></div>
             </div>
         </div>
-    </div>
-    <% }) %>
+        <% }) %>

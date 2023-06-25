@@ -6,12 +6,15 @@ const viewBets = async (req, res) => {
   try {
     await Bets.find({ userID: req.bearer.payload._id },
       { stake: 1, betDate: 1, gameSlip: 1 })
-      .populate('gameSlip').sort('-createdAt')
+      .populate('gameSlip').sort({ createdAt: 1 })
       .exec(function (err, history) {
-        if (err) return handleError;
-        res.status(200).render('view-bets', {
-          betHistory: history
-        })
+        if (history == '') {
+          res.send('<small>You have not placed any bet</small>')
+        } else {
+          res.status(200).render('view-bets', {
+            betHistory: history
+          })
+        }
       })
 
   } catch (e) {
@@ -33,9 +36,10 @@ const placeBet = async (req, res) => {
       balance: 1, _id: 1
     }).then(wallet => {
       let newBalance = wallet.balance - games.stake
-      
-      if (newBalance < 0) {
-        throw Error
+
+      if (newBalance < 0 || games.stake < 100) {
+        throw Error;
+        return false;
       }
       else {
         Wallet.findByIdAndUpdate(wallet._id, { balance: newBalance }).exec()
@@ -109,37 +113,49 @@ const newTicketSlip = async (req, res) => {
   const slip = new BettingSlip({
     games: req.body.matches, // Array of objects
     userStakeLimit: req.body.stakeLimit,
-    maximumStake: req.body.maxStake
+    maximumStake: req.body.maxStake,
+    totalOdds: req.body.totalOdds,
+    ticketBonus: req.body.ticketBonus
   })
   try {
-    await slip.save()
-      .then(data => {
-        res.status(401).json({
-          status: true,
-          message: "Ticket Generated"
+    if (req.bearer.payload.role == 'Admin') {
+      await slip.save()
+        .then(data => {
+          res.status(401).json({
+            status: true,
+            message: "Ticket Generated"
+          })
         })
-      })
-      .catch(err => {
-        res.status(500).json({
-          status: false,
-          message: err.message
+        .catch(err => {
+          res.status(500).json({
+            status: false,
+            message: err.message
+          })
         })
-      })
+    } else
+      throw Error;
   }
   catch (e) {
-
+    res.status(403).json({
+      status: false,
+      message: `Unauthorized access`
+    })
   }
 }
 
 // View all bet tickets for admin
 const viewAllTickets = async (req, res) => {
   try {
-      
+
     await BettingSlip.find()
       .then(games => {
-        res.status(200).render('view-ticket', {
-          BetSlip: games,
-        })
+        if (games == '') {
+          res.send('<small>Tickets unavailable</small>')
+        } else {
+          res.status(200).render('view-ticket', {
+            BetSlip: games,
+          })
+        }
       })
 
   } catch (e) {
@@ -150,11 +166,34 @@ const viewAllTickets = async (req, res) => {
   }
 }
 
+// View one ticket
+const getOneGameSlip = async (req, res) => {
+  try {
+    await BettingSlip.findById(req.params.id, {
+      maximumStake: 1,
+      totalOdds: 1,
+      ticketBonus: 1
+    })
+      .then(slip => {
+        res.status(200).json({
+          slip
+        })
+      })
+
+  } catch (e) {
+    res.status(501).json({
+      message: e.message
+    })
+  }
+}
+
+
 module.exports = {
   ticketSlip: newTicketSlip,
   ViewAdminTickets: viewAllTickets,
   viewBets,
   placeBet,
   updateGameSlip,
-  cancelBet
+  cancelBet,
+  getOneGameSlip
 }

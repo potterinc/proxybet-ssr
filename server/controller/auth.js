@@ -234,6 +234,7 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
         });
     } else {
         res.status(403).redirect('/auth.html')
+        next()
     }
 }
 
