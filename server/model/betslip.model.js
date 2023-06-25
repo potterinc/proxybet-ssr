@@ -36,10 +36,8 @@ const BetSlips = new betSlipSchema({
 	},
 	userStakeLimit: Number,
 	maximumStake: Number,
-	result: {
-		type: Boolean,
-		default: false
-	},
+	result: String,
+	ticketBonus: Number,
 	totalOdds: Number
 }, {timestamps: true})
 /** PLACING OF BETS*/

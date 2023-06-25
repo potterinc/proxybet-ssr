@@ -1,5 +1,5 @@
 const express = require('express');
-const { ticketSlip, ViewAdminTickets } = require('../controller/bet.module');
+const { ticketSlip, ViewAdminTickets, getOneGameSlip } = require('../controller/bet.module');
 const { VERIFY_AUTH_TOKEN } = require('../controller/auth');
 const betSlip = express.Router()
 
@@ -17,9 +17,7 @@ betSlip
     .route('/:id')
 
     // view one by id
-    .get((req, res) => {
-        res.json({ id: req.params.id })
-    })
+    .get(VERIFY_AUTH_TOKEN, getOneGameSlip)
 
     // update bet slip
     .patch((req, res) => {
