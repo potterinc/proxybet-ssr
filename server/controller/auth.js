@@ -228,12 +228,12 @@ const VERIFY_AUTH_TOKEN = (req, res, next) => {
         const token = bearerHeader.split(' ')[1]
 
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403)
+            if (err) return res.status(403).send('Your login session has expired - <a href="auth.html">Login</a> to continue')
             req.bearer = user
             next()
         });
     } else {
-        res.status(403).redirect('/auth.html')
+        res.sendStaus(403).redirect('/auth.html')
         next()
     }
 }
