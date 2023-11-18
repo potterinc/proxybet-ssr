@@ -1,4 +1,4 @@
-const { mongoose } = require("mongoose");
+const mongoose = require("mongoose");
 
 mongoose.connect(process.env.SERVER_URI, {
 	useNewUrlParser: true,
@@ -9,6 +9,4 @@ mongoose.connection
 		console.log(err)
 		mongoose.disconnect()
 	})
-	.once('connected', () => console.log(`DATASOURCE: ${mongoose.connections[0]._connectionString}`))
-
-module.exports = { mongoose }
+	.once('connected', () => console.log(`DATASOURCE: ${mongoose.connections[0]._connectionString}`));

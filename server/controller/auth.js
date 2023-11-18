@@ -4,8 +4,6 @@ const bcrypt = require('bcrypt');
 
 const { proxyMailer, SIGN_AUTH_TOKEN, RESET_CODE, resetTimeout } = require("./auth.module");
 const User = require('../model/user.model');
-const { Wallet } = require('../model/wallet.model');
-
 
 // User registration
 const newUser = (req, res) => {
@@ -28,20 +26,13 @@ const newUser = (req, res) => {
                 .then(user => {
                     delete user.password
 
-                    // CREATE USER WALLET
-                    const userWallet = new Wallet({
-                        userID: user._id
-                    }).save()
-
                     res.status(201).json({
                         message: "Registration Successful",
                         isLoggedIn: true,
                         firstName: user.firstName,
                         lastName: user.lastName,
-                        role: user.role,
-                        email: user.email,
                         token: SIGN_AUTH_TOKEN(user, process.env.ACCESS_TOKEN_SECRET)
-                    })
+                    });
                     const d = new Date()
                     let year = d.getFullYear()
                     let mail = `

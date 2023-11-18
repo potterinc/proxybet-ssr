@@ -1,8 +1,6 @@
-const { mongoose } = require('../config');
+const { mongoose, Schema } = require('mongoose');
 
-const UserSchema = mongoose.Schema;
-
-const userModel = new UserSchema({
+const userModel = new Schema({
     firstName: {
         type: String,
         required: [true, "First Name is required"]
@@ -39,6 +37,10 @@ const userModel = new UserSchema({
     Auth: {
         token: String
     },
+    walletBalance:{
+        type:Number,
+        default: 0.00
+    },
     Profile: {
         displayPicture: String,
         Gender: String,
@@ -47,4 +49,5 @@ const userModel = new UserSchema({
     }
 },{timestamps:true});
 
-module.exports = mongoose.model('Users', userModel);
+const User = mongoose.model('User', userModel, 'Users');
+export default User;

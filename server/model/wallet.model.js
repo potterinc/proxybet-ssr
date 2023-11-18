@@ -1,8 +1,7 @@
 const { Schema } = require('mongoose')
-const { mongoose } = require('../config')
+require('../config')
 
-const paymentSchema = mongoose.Schema
-const Payments = new paymentSchema({
+const paymentSchema = new Schema({
 	userID: Schema.Types.ObjectId,
 	tx: {
 		method: String, // Payment or Withdrawal
@@ -16,19 +15,7 @@ const Payments = new paymentSchema({
 	txStatus: String, // Payment status from Merchant
 }, {timestamps:true})
 
-// WALLET
 
-const walletSchema = mongoose.Schema;
-const Balance = new walletSchema({
-	userID: Schema.Types.ObjectId,
-	balance: {
-		type: Number,
-		default: 0
-	}
-},{timestamps: true})
+const Transactions = mongoose.model('Transactions', paymentSchema, 'Transactions')
 
-
-const Transactions = mongoose.model('Transactions', Payments)
-const Wallet = mongoose.model('Wallet', Balance)
-
-module.exports = { Transactions, Wallet }
+export default Transactions

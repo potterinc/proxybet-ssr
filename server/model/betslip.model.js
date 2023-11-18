@@ -1,5 +1,5 @@
 const { Schema } = require('mongoose')
-const { mongoose } = require('../config')
+require('../config')
 
 /** BET SLIPS */
 const betSlipSchema = mongoose.Schema
