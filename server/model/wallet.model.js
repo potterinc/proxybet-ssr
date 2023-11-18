@@ -1,4 +1,4 @@
-const { Schema } = require('mongoose')
+const { Schema, mongoose} = require('mongoose')
 require('../config')
 
 const paymentSchema = new Schema({
@@ -18,4 +18,4 @@ const paymentSchema = new Schema({
 
 const Transactions = mongoose.model('Transactions', paymentSchema, 'Transactions')
 
-export default Transactions
+module.exports = Transactions

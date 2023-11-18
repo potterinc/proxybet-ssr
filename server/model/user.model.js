@@ -50,4 +50,4 @@ const userModel = new Schema({
 },{timestamps:true});
 
 const User = mongoose.model('User', userModel, 'Users');
-export default User;
+module.exports = User;
