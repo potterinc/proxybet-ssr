@@ -6,9 +6,10 @@
                 <div class="col-md-8 text-center header-text">
                     <span> Bet Slip: <%=history.gameSlip._id %> </span><br>
                     <span class="badge">
-                        <span class="">Posted: </span>
-                        <span class="col-md-4 text-secondary"><%=history.gameSlip.createdAt.toDateString() %></span>
-                    </span>
+                        <span class="">Date Posted: </span>
+                        <span class="col-md-4 text-secondary"><%=history.gameSlip.createdAt.toDateString() %>
+                        </span>
+                        - <%=history.gameSlip.createdAt.getHours()%>:<%=history.gameSlip.createdAt.getMinutes()%></span>
                 </div>
                 <div class="col-md-2"></div>
             </div>
@@ -70,8 +71,8 @@
                           <% } %>
                     </p>
                     <div class="row d-flex justify-content-between">
-                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-danger my-2">Delete</a>
-                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-primary my-2">Edit Bet</a>
+                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-danger my-2">Cancel</a>
+                        <a class="col-lg-5 col-md-5 col-sm-5 btn btn-primary my-2">Edit</a>
                     </div>
                 </div>
             </div>

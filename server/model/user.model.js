@@ -28,7 +28,7 @@ const userModel = new Schema({
     },
     phone: {
         type: String,
-        minLength: [9,"{VALUE} doesnt seem like a valid number"],
+        minLength: [9, "{VALUE} doesnt seem like a valid number"],
         maxlength: [11, "{VALUE} is longer than 11 digits"],
         unique: [true, "Phone number already exists"],
         required: [true, "Phone Number is required"]
@@ -37,8 +37,8 @@ const userModel = new Schema({
     Auth: {
         token: String
     },
-    walletBalance:{
-        type:Number,
+    walletBalance: {
+        type: Number,
         default: 0.00
     },
     Profile: {
@@ -47,7 +47,10 @@ const userModel = new Schema({
         Address: String,
         DOB: Date
     }
-},{timestamps:true});
+}, {
+    timestamps: true,
+    versionKey: false
+});
 
 const User = mongoose.model('User', userModel, 'Users');
 module.exports = User;

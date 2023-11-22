@@ -39,15 +39,18 @@ const BetSlips = new betSlipSchema({
 	result: String,
 	ticketBonus: Number,
 	totalOdds: Number
-}, {timestamps: true})
+}, {timestamps: true, versionKey: false})
+
+
 /** PLACING OF BETS*/
 
 const bettingSchema = mongoose.Schema
 const Bet = new bettingSchema({
-	userID: Schema.Types.ObjectId,
+	user: Schema.Types.ObjectId,
 	stake: {
 		type: Number,
-		required: [true, 'Your stake is required']
+		required: [true, 'Your stake is required'],
+		min: [100, 'Stake is too small']
 	},
 	gameSlip: {
 		type: Schema.Types.ObjectId,

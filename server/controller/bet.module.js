@@ -1,12 +1,14 @@
 const { Bets, BettingSlip } = require('../model/betslip.model')
-const { Wallet } = require('../model/wallet.model')
+const { Transactions } = require('../model/transaction.model')
+const User = require('../model/user.model.js')
 
 // View all bets by a user
 const viewBets = async (req, res) => {
   try {
-    await Bets.find({ userID: req.bearer.payload._id },
+    await Bets.find({ user: req.bearer.payload._id },
       { stake: 1, betDate: 1, gameSlip: 1 })
-      .populate('gameSlip').sort({ createdAt: 1 })
+      .populate('gameSlip')
+      .sort({ createdAt: -1 })
       .exec(function (err, history) {
         if (history == '') {
           res.send('<small>You have not placed any bet</small>')
@@ -27,40 +29,65 @@ const viewBets = async (req, res) => {
 // Place a bet
 const placeBet = async (req, res) => {
   const games = new Bets({
-    userID: req.bearer.payload._id,
+    user: req.bearer.payload._id,
     stake: parseInt(req.body.stake),
     gameSlip: req.body.gameSlip
   })
+
   try {
-    await Wallet.findOne({ userID: games.userID }, {
-      balance: 1, _id: 1
-    }).then(wallet => {
-      let newBalance = wallet.balance - games.stake
 
-      if (newBalance < 0 || games.stake < 100) {
-        throw Error;
-        return false;
-      }
-      else {
-        Wallet.findByIdAndUpdate(wallet._id, { balance: newBalance }).exec()
-        res.status(201).json({
-          status: true,
-          message: "OK: Bet Placed!",
-        })
-      }
-    }).catch(e => {
-      res.status(402).json({
-        message: 'Insufficient funds!'
+    if (games.gameSlip === undefined)
+      return res.status(400).json({ message: 'Slip not found' })
+
+    // Get wallet balance
+    const user = await User.findById(games.user, {
+      walletBalance: 1
+    }).exec();
+
+    let newBalance = parseInt(user.walletBalance) - parseInt(games.stake)
+
+    // Validating minimum stake
+    if (games.stake < 100) {
+      return res.status(400).json({
+        message: 'Minimum stake is NGN100'
       })
+    }
+    // Validating if balance is sufficient
+    else if (newBalance < 0) {
+      console.log()
+      return res.status(406).json({
+        message: 'Insufficient funds!'
+      });
+    }
+    else {
 
-    })
-
-    games.save()
+      // Update wallet balance
+      await User.findByIdAndUpdate(user._id, {
+        $set: { walletBalance: newBalance }
+      }, { runValidators: true })
+        .then(() => {
+          games.save()
+          return res.status(201).json({
+            status: true,
+            message: "OK: Bet Placed!",
+          })
+        })
+        .catch(e => {
+          if (e.name = 'validationError') {
+            if (e.error.errors['stake']) {
+              return res.status(400).json({
+                status: false,
+                message: e.error.errors['stake'].message
+              });
+            }
+          }
+        })
+    }
 
   } catch (e) {
     res.status(500).json({
       status: false,
-      message: err.message
+      message: e.message
     })
   }
 
