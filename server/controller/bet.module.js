@@ -6,7 +6,7 @@ const User = require('../model/user.model.js')
 const viewBets = async (req, res) => {
   try {
     await Bets.find({ user: req.bearer.payload._id },
-      { stake: 1, betDate: 1, gameSlip: 1 })
+      { stake: 1, betDate: 1, gameSlip: 1, cashOut:1 })
       .populate('gameSlip')
       .sort({ createdAt: -1 })
       .exec(function (err, history) {
@@ -31,7 +31,8 @@ const placeBet = async (req, res) => {
   const games = new Bets({
     user: req.bearer.payload._id,
     stake: parseInt(req.body.stake),
-    gameSlip: req.body.gameSlip
+    gameSlip: req.body.gameSlip,
+    cashOut : req.body.cashOut
   })
 
   try {

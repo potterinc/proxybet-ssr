@@ -55,7 +55,8 @@ const Bet = new bettingSchema({
 	gameSlip: {
 		type: Schema.Types.ObjectId,
 		ref: 'BetSlips'
-	}
+	},
+	cashOut:Number
 },{timestamps:true})
 
 const Bets = mongoose.model('Bets', Bet)
