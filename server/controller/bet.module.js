@@ -1,5 +1,4 @@
 const { Bets, BettingSlip } = require('../model/betslip.model')
-const { Transactions } = require('../model/transaction.model')
 const User = require('../model/user.model.js')
 
 // View all bets by a user
@@ -38,7 +37,7 @@ const placeBet = async (req, res) => {
   try {
 
     if (games.gameSlip === undefined)
-      return res.status(400).json({ message: 'Slip not found' })
+      return res.status(404).json({ message: 'Slip not found' })
 
     // Get wallet balance
     const user = await User.findById(games.user, {
