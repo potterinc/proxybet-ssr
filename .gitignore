@@ -1,3 +1,4 @@
-.*
-node_modules
+.env
+.rest
 public
+node_modules
