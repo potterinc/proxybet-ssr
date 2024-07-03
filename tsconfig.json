@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     /* Language and Environment */
-    "target": "ES2023",
+    "target": "ESNext",
     /* Modules */
-    "module": "CommonJS",
+    "module": "NodeNext",
     "rootDir": "./src",
     "moduleResolution": "NodeNext",
     /* Emit */
