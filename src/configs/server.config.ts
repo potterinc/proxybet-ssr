@@ -9,7 +9,7 @@ class DatabaseConnection {
 
   /*** @description Establish database connection */
   private async databaseConnection() {
-    await this.db.connect(AppConfig.server.db, { retryWrites: true, w: "majority" })
+    await this.db.connect(AppConfig.server.DATABASE_URL, { retryWrites: true, w: "majority" })
       .then(connect => console.log(`DATASOURCE:${connect.connection.host}\nDATABASE:${connect.connection.name}`))
       .catch(error => console.error(error))
   }
