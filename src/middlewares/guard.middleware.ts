@@ -1,19 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import AppConfig from '../configs/app.config';
+import IUser from '../interfaces/user.interface';
 
-class Guard {
-	constructor() { };
+class Guard{
+	constructor(payload: IUser | object) {
+		this.SIGN_TOKEN(payload, AppConfig.authorization.KEY);
+	 };
 
-	VERIFY_TOKEN (req: Request, res: Response, next: NextFunction,){
+	VERIFY_TOKEN(req: Request, res: Response, next: NextFunction,) {
 
-    const token = req.cookies.access_token;
+		const token = req.cookies.access_token;
 		if (token !== undefined) {
 			jwt.verify(token, AppConfig.authorization.KEY, (err: any, payload: any) => {
 				if (!err) {
 					res.cookie('token', payload, {
-            httpOnly: true,
-          });
+						httpOnly: true
+					});
 					next();
 				}
 				else {
@@ -54,7 +57,7 @@ class Guard {
 				}
 			})
 		} else {
-      res.clearCookie('access_token');
+			res.clearCookie('access_token');
 			return res.status(401).json({
 				status: false,
 				message: 'Unauthorized: Authentication token required'
@@ -68,7 +71,7 @@ class Guard {
 	 * @param {string} key - JWT Secret key
 	 * @return - Base64 string
 	 */
-	SIGN_TOKEN (payload: object | string | Buffer, key: string) {
+	private SIGN_TOKEN(payload: object | string | Buffer, key: string) {
 		return jwt.sign({ payload }, key, {
 			expiresIn: '1d'
 		});

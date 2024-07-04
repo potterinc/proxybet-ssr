@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import AppConfig from "../configs/app.config";
+import authRouter from "./auth.routes";
 
 const RouterModule: Router = Router();
 
@@ -11,5 +12,7 @@ RouterModule.get('', (req: Request, res: Response) => {
 RouterModule.get(`${AppConfig.server.BASE_URL}`, (req: Request, res: Response) => {
   res.status(200).send('<h1>Welcome to the ProxyBET API service</h1> Ensure you study the <a href="https://www.postman.com/harryp30/workspace/proxybet-api" target="_blank">documentation</a> properly before using this service')
 })
+
+RouterModule.use(`${AppConfig.server.BASE_URL}/auth`, authRouter);
 
 export default RouterModule;

@@ -2,7 +2,7 @@ import mongoose, { Mongoose } from "mongoose";
 import AppConfig from "./app.config";
 
 class DatabaseConnection {
-  db: Mongoose = new Mongoose();
+  db:Mongoose = mongoose;
 
   /*** @description Connect to MongoDB server  */
   constructor() { this.databaseConnection() }
