@@ -3,20 +3,22 @@ import jwt from 'jsonwebtoken';
 import AppConfig from '../configs/app.config';
 import IUser from '../interfaces/user.interface';
 
-class Guard{
+/**
+ * @description Module for handling authentication and authorization 
+ * with JSONWeToken
+ */
+class Guard {
 	constructor(payload: IUser | object) {
 		this.SIGN_TOKEN(payload, AppConfig.authorization.KEY);
-	 };
+	};
 
 	VERIFY_TOKEN(req: Request, res: Response, next: NextFunction,) {
 
-		const token = req.cookies.access_token;
+		const token = req.cookies.session;
 		if (token !== undefined) {
 			jwt.verify(token, AppConfig.authorization.KEY, (err: any, payload: any) => {
 				if (!err) {
-					res.cookie('token', payload, {
-						httpOnly: true
-					});
+					res.cookie('token', payload, { httpOnly: true });
 					next();
 				}
 				else {
@@ -57,7 +59,7 @@ class Guard{
 				}
 			})
 		} else {
-			res.clearCookie('access_token');
+			res.clearCookie('session');
 			return res.status(401).json({
 				status: false,
 				message: 'Unauthorized: Authentication token required'

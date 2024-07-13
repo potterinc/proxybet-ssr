@@ -14,8 +14,12 @@ class AuthenticationRepository {
     return await UserModel.findOne({ email: user.email })
   }
 
-  register(user: IUser) {
-
+  /**
+   * Creates a new user
+   * @param payload User registration information
+   */
+  async register(payload: IUser) {
+    return await UserModel.create(payload)
   }
 }
 

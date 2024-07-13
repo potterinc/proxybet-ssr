@@ -1,6 +1,4 @@
-import AppConfig from "../configs/app.config";
 import IUser from "../interfaces/user.interface";
-import Guard from "../middlewares/guard.middleware";
 import AuthenticationRepository from "../repositories/authentication.repository";
 import { NotFoundError } from "../utils/errors.utils";
 import bcrypt from 'bcryptjs';
@@ -16,11 +14,11 @@ class AuthenticationService {
   /**
    * Authorize user
    * @param credentials User login credentials
-   * @returns return User object
+   * @returns return User payload
    */
   async authorizeUser() {
     return await this.authRepository.login(this.user)
-      .then(user => {
+    .then(user => {
         if (!user)
           throw new NotFoundError('Invalid email or password');
 

@@ -13,7 +13,6 @@ class AuthController {
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const authService = new AuthenticationService(req.body);
-    
 
     try {
       if (!email || !password) {
