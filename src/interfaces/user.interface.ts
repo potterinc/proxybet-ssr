@@ -1,8 +1,8 @@
 import { Document } from "mongoose";
 
 enum Role {
-  REGULAR = 'REGULAR',
-  ADMIN = 'ADMIN'
+  REGULAR = 'Regular',
+  ADMIN = 'Admin'
 }
 
 interface IUser extends Document {
@@ -13,7 +13,7 @@ interface IUser extends Document {
   role: string;
   password: string;
   token?: string;
-  walletBalance: number;
+  walletBalance?: number;
 }
 
 export default IUser;

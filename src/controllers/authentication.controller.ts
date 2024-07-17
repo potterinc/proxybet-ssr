@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import AuthenticationService from "../services/authentication.service";
 import Guard from "../middlewares/guard.middleware";
-import { ValidationError } from "../utils/errors.utils";
+import { ErrorResponseHandler, ValidationError } from "../utils/errors.utils";
+import IUser from "../interfaces/user.interface";
+import { hashSync } from "bcryptjs";
 
 class AuthController {
 
@@ -16,8 +18,8 @@ class AuthController {
 
     try {
       if (!email || !password) {
-      throw new ValidationError('Email or password is required')
-    }
+        throw new ValidationError('Email or password is required')
+      }
       await authService.authorizeUser()
         .then(user => {
           const token = new Guard(user);
@@ -29,23 +31,7 @@ class AuthController {
           })
         })
     } catch (e: unknown | any) {
-      switch (e.name) {
-        case 'NotFoundError':
-          return res.status(403).json({
-            success: false,
-            message: e.message
-          });
-        case 'ValidationError':
-          return res.status(400).json({
-            success: false,
-            message: e.message
-          });
-        default:
-          return res.status(501).json({
-            success: false,
-            message: `Something went wrong: ${e.message}`
-          })
-      }
+
     }
   }
 
@@ -55,10 +41,25 @@ class AuthController {
    * @param res Server response object
    */
   async register(req: Request, res: Response) {
+    const { password }: IUser = req.body;
+
     try {
+      if (!password)
+        throw new ValidationError('Password is required');
+      req.body.password = hashSync(password, 3);
 
+      const authenticate = new AuthenticationService(req.body);
+      await authenticate.createUser()
+        .then(response => {
+          console.log('ctrl-t', response)
+          return res.status(201).json({
+            success: true,
+            message: 'Account Created',
+            user: response
+          })
+        })
     } catch (e: unknown | any) {
-
+      new ErrorResponseHandler(e, res)
     }
   }
 }

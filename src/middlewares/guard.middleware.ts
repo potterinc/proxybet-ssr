@@ -5,7 +5,7 @@ import IUser from '../interfaces/user.interface';
 
 /**
  * @description Module for handling authentication and authorization 
- * with JSONWeToken
+ * with JSON web token
  */
 class Guard {
 	constructor(payload: IUser | object) {

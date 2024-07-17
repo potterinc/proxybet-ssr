@@ -1,4 +1,5 @@
-import IUser from "../interfaces/user.interface";
+import express, { Response, response } from "express";
+
 
 /**
  * @description Custom Error model is not found
@@ -28,19 +29,26 @@ class ValidationError extends Error {
   }
 }
 
+/**@description Custom error for invalid reference mostly cast errors */
+class ReferenceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ReferenceError'
+  }
+}
 /**
  * @description Handles all mongoose validation errors based on the schema provided
- * @throws Custom Error
+ * @throws Error
  */
-class MongooseErrorHandler<Type> {
-  dataBaseModel: Type;
+class MongooseValidationErrorHandler {
+  dataBaseModel: any;
   /**
    * 
    * @param e Error object
    * @param schema Schema object or interface
    */
-  constructor(private e: Error | unknown, schema: Type) {
-    this.dataBaseModel = schema;
+  constructor(private e: Error | unknown, schema: any) {
+    this.dataBaseModel = schema.schema.paths;
     this.handleError(this.e)
   }
 
@@ -50,11 +58,12 @@ class MongooseErrorHandler<Type> {
    */
   private handleError(error: Error | unknown | any) {
     switch (error.name) {
-      case 'ValidationError':
+      case 'ValidationError': {
         for (let path in this.dataBaseModel) {
-          if (error.errors[path])
-            throw new ValidationError(error.errors[path].message);
+          if (error.errors[`${path}`])
+            throw new ValidationError(error.errors[`${path}`].message);
         }
+      }
         break;
       case 'MongoServerError':
         throw new ServerError('FAILED: User already exist');
@@ -64,5 +73,48 @@ class MongooseErrorHandler<Type> {
   }
 }
 
-export default MongooseErrorHandler;
-export { ServerError, NotFoundError, ValidationError }
+class ErrorResponseHandler {
+  constructor(private e: Error | unknown | any, private res: Response) {
+    this.errorResponse(this.e)
+  }
+  
+  private errorResponse(err: Error | unknown | any) {
+    switch (err.name) {
+      case 'NotFoundError':
+        return this.res.status(404).json({
+          success: false,
+          message: err.message
+        });
+      case 'ValidationError':
+        return this.res.status(406).json({
+          success: false,
+          message: err.message
+        });
+      case 'ServerError':
+        return this.res.status(409).json({
+          success: false,
+          message: err.message
+        });
+      case 'ReferenceError':
+        return this.res.status(500).json({
+          success: false,
+          message: err.message
+        })
+      default:
+        return this.res.status(500).json({
+          success: false,
+          message: `Something went wrong: ${err.message}`
+        })
+    }
+  }
+}
+
+
+export default MongooseValidationErrorHandler;
+export {
+  ServerError,
+  NotFoundError,
+  ValidationError,
+  ErrorResponseHandler,
+  ReferenceError
+}
