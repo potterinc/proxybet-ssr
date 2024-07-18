@@ -52,7 +52,7 @@ class Mailer {
 	 * Email template for welcome message
 	 * @returns String
 	 */
-	WelcomeMessage(): string {
+	private WelcomeMessage(): string {
 			const template = `<h1 style="text-align:center">Welcome ${this.recepient.firstName},</h1>
                 <p style="text-align:center">
                 Thank you for signing up with ProxyBET, we're so happy to have you
@@ -78,7 +78,7 @@ class Mailer {
                 </div>
                 <hr>
                  <small>
-                    <p>&copy; ${new Date().getUTCFullYear()} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
+                    <p style="text-align:center">&copy; ${new Date().getUTCFullYear()} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
                 </small>
                 <p>
                 `
