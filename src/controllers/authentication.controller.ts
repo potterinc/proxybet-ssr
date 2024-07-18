@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import AuthenticationService from "../services/authentication.service";
-import Guard from "../middlewares/guard.middleware";
+import AuthorizedUser from "../middlewares/guard.middleware";
 import { ErrorResponseHandler, ValidationError } from "../utils/errors.utils";
 import IUser from "../interfaces/user.interface";
 import { hashSync } from "bcryptjs";
@@ -22,16 +22,14 @@ class AuthController {
       }
       await authService.authorizeUser()
         .then(user => {
-          const token = new Guard(user);
-          console.log('user', user, 'TOKEN', token)//HARRY REMOVE AFTER TESTING
-
+          new AuthorizedUser(user, res);
           res.status(200).json({
             success: true,
             message: user
           })
         })
     } catch (e: unknown | any) {
-
+      new ErrorResponseHandler(e, res)
     }
   }
 
@@ -50,12 +48,12 @@ class AuthController {
 
       const authenticate = new AuthenticationService(req.body);
       await authenticate.createUser()
-        .then(response => {
-          console.log('ctrl-t', response)
+        .then(user => {
+          new AuthorizedUser(user, res)
           return res.status(201).json({
             success: true,
             message: 'Account Created',
-            user: response
+            user: user
           })
         })
     } catch (e: unknown | any) {

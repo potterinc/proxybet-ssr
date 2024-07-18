@@ -1,24 +1,31 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, response } from 'express';
 import jwt from 'jsonwebtoken';
 import AppConfig from '../configs/app.config';
 import IUser from '../interfaces/user.interface';
 
 /**
  * @description Module for handling authentication and authorization 
- * with JSON web token
+ * with JSON web token and server cookies
  */
 class Guard {
-	constructor(payload: IUser | object) {
-		this.SIGN_TOKEN(payload, AppConfig.authorization.KEY);
+	constructor(payload: IUser | object | any, response: Response) {
+		this.SIGN_TOKEN(payload, AppConfig.authorization.KEY, response);
 	};
 
+	/**
+	 * Verifies authentication token
+	 * @param req request body
+	 * @param res server response
+	 * @param next 
+	 * @returns 
+	 */
 	VERIFY_TOKEN(req: Request, res: Response, next: NextFunction,) {
 
 		const token = req.cookies.session;
 		if (token !== undefined) {
 			jwt.verify(token, AppConfig.authorization.KEY, (err: any, payload: any) => {
 				if (!err) {
-					res.cookie('token', payload, { httpOnly: true });
+					res.locals = payload
 					next();
 				}
 				else {
@@ -67,16 +74,20 @@ class Guard {
 		}
 	}
 
+
 	/**
-	 * Issue authorization token
-	 * @param {String|Buffer|object} payload - Payload data
-	 * @param {string} key - JWT Secret key
-	 * @return - Base64 string
+	 * Authorized a user session on the server
+	 * @param payload user object to be encrypted
+	 * @param key JWT authorization key
+	 * @returns 
 	 */
-	private SIGN_TOKEN(payload: object | string | Buffer, key: string) {
-		return jwt.sign({ payload }, key, {
+	private SIGN_TOKEN(payload: object | string | Buffer, key: string, res: Response) {
+		const token = jwt.sign({ payload }, key, {
 			expiresIn: '1d'
 		});
+		return res.cookie('session', token, {
+			httpOnly: true
+		})
 	}
 }
 

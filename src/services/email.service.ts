@@ -53,10 +53,7 @@ class Mailer {
 	 * @returns String
 	 */
 	WelcomeMessage(): string {
-		const page = new HTMLElement();
-		const body = new HTMLBodyElement()
-		const template = new HTMLDivElement();
-			template.innerHTML = `<h1 style="text-align:center">Welcome ${this.recepient.firstName},</h1>
+			const template = `<h1 style="text-align:center">Welcome ${this.recepient.firstName},</h1>
                 <p style="text-align:center">
                 Thank you for signing up with ProxyBET, we're so happy to have you
                 on board. You are now one step closer to becoming a bet king!<br>
@@ -86,7 +83,7 @@ class Mailer {
                 <p>
                 `
 
-		return `${page}${body.appendChild(template)}`
+		return template
 	}
 }
 

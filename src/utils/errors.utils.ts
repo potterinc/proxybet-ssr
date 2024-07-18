@@ -68,7 +68,7 @@ class MongooseValidationErrorHandler {
       case 'MongoServerError':
         throw new ServerError('FAILED: User already exist');
       default:
-        throw new Error(`Something went wrong: ${error.message}`)
+        throw new Error(error.message)
     }
   }
 }
