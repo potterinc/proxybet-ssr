@@ -55,16 +55,16 @@ class AuthController {
 
   /** @description Update new password */
   async updatePassword(req: Request, res: Response, next: NextFunction) {
-    const user: { id: string, password: string } = {
-      id: req.body.id,
-      password: hashSync(req.body.password, 3)
-    }
-
-    const authService = new AuthenticationService(user)
     try {
-      if (!user.id || !user.password)
+      const user: { id: string, password: string } = {
+        id: req.body.id,
+        password: hashSync(req.body.password, 3)
+      }
+
+      const authService = new AuthenticationService(user)
+      if (!user.password)
         throw new ValidationError('Password required');
-      
+
       await authService.updatePassword()
         .then(() => {
           res.status(202).json({
