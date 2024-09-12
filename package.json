@@ -10,8 +10,8 @@
     "test": "jest app.js"
   },
   "keywords": [
-    "['sport'",
-    "'betting']"
+    "sport",
+    "betting"
   ],
   "author": "Arekhandia Harry",
   "license": "ISC",

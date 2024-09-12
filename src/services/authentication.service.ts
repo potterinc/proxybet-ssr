@@ -1,7 +1,7 @@
 import IUser from "../interfaces/user.interface";
 import UserModel from "../models/user. model";
 import AuthenticationRepository from "../repositories/authentication.repository";
-import MongooseValidationErrorHandler, { NotFoundError } from "../utils/errors.utils";
+import MongooseValidationErrorHandler, { NotFoundError, ServerError } from "../utils/errors.utils";
 import bcrypt from 'bcryptjs';
 import Mailer from "./email.service";
 import Guard from "../middlewares/guard.middleware";
@@ -19,7 +19,7 @@ class AuthenticationService {
    * Authorize a user
    * @returns user payload
    */
-  async authorizeUser() {
+  async login() {
     return await this.authRepository.login(this.user)
       .then(user => {
         if (!user)
@@ -28,7 +28,6 @@ class AuthenticationService {
         const password = bcrypt.compareSync(this.user.password, user.password);
         if (password) {
           return {
-            _id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
@@ -43,7 +42,7 @@ class AuthenticationService {
    * Creates a new user
    * @returns User payload
    */
-  async createUser() {
+  async register() {
     return await this.authRepository.register(this.user)
       .then(user => {
         const payload = {
@@ -58,6 +57,20 @@ class AuthenticationService {
       })
       .catch((e: Error) => {
         new MongooseValidationErrorHandler(e, UserModel)
+      })
+  }
+
+  /**
+   * Update user password
+   * @returns Updated user object
+   */
+  async updatePassword() {
+    return await this.authRepository.updatePassword(this.user.id, this.user.password)
+      .then(response => {
+        return response
+      })
+      .catch((e: unknown | any) => {
+        new ServerError(`${e.message}`)
       })
   }
 }

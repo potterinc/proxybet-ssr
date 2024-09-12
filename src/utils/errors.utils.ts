@@ -20,6 +20,15 @@ class ServerError extends Error {
     this.name = 'ServerError'
   }
 }
+/**
+ * @description Custom Error for failed server responses
+ */
+class DuplicateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DuplicateError'
+  }
+}
 
 /**@description Custom error for invalid request */
 class ValidationError extends Error {
@@ -66,7 +75,7 @@ class MongooseValidationErrorHandler {
       }
         break;
       case 'MongoServerError':
-        throw new ServerError('FAILED: User already exist');
+        throw new DuplicateError('FAILED: User already exist');
       default:
         throw new Error(error.message)
     }
@@ -90,8 +99,13 @@ class ErrorResponseHandler {
           success: false,
           message: err.message
         });
-      case 'ServerError':
+      case 'DuplicateError':
         return this.res.status(409).json({
+          success: false,
+          message: err.message
+        });
+      case 'ServerError':
+        return this.res.status(500).json({
           success: false,
           message: err.message
         });
@@ -116,5 +130,6 @@ export {
   NotFoundError,
   ValidationError,
   ErrorResponseHandler,
-  ReferenceError
+  ReferenceError,
+  DuplicateError
 }

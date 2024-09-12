@@ -7,11 +7,7 @@ import { hashSync } from "bcryptjs";
 
 class AuthController {
 
-  /**
-   * User authentication and authorization
-   * @param req Client request object
-   * @param res Server response object
-  */
+  /** @description User login and authorization */
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
     const authService = new AuthenticationService(req.body);
@@ -20,7 +16,7 @@ class AuthController {
       if (!email || !password) {
         throw new ValidationError('Email or password is required')
       }
-      await authService.authorizeUser()
+      await authService.login()
         .then(user => {
           new AuthorizedUser(user, res);
           res.status(200).json({
@@ -33,11 +29,7 @@ class AuthController {
     }
   }
 
-  /**
-   * Creates a new user record
-   * @param req Client request object
-   * @param res Server response object
-   */
+  /** @description Creates a new user */
   async register(req: Request, res: Response) {
     const { password }: IUser = req.body;
 
@@ -46,8 +38,8 @@ class AuthController {
         throw new ValidationError('Password is required');
       req.body.password = hashSync(password, 3);
 
-      const authenticate = new AuthenticationService(req.body);
-      await authenticate.createUser()
+      const authService = new AuthenticationService(req.body);
+      await authService.register()
         .then(user => {
           new AuthorizedUser(user, res)
           return res.status(201).json({
@@ -59,6 +51,36 @@ class AuthController {
     } catch (e: unknown | any) {
       new ErrorResponseHandler(e, res)
     }
+  }
+
+  /** @description Update new password */
+  async updatePassword(req: Request, res: Response) {
+    const user: { id: string, password: string } = {
+      id: req.body.id,
+      password: hashSync(req.body.password, 3)
+    }
+    const authService = new AuthenticationService(user)
+    try {
+      await authService.updatePassword()
+        .then((user) => {
+          res.status(201).json({
+            success: true,
+            message: "Password updated",
+            user
+          })
+        });
+    } catch (e: unknown | any) {
+      new ErrorResponseHandler(e, res);
+    }
+  }
+
+  /**@description Terminates user session */
+  logout(req: Request, res: Response) {
+    res.clearCookie('session');
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out'
+    })
   }
 }
 
