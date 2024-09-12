@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, json, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -17,6 +17,17 @@ app.use(morgan('tiny'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Global error handler middleware
+app.use((e: Error, req: Request, res: Response, next: NextFunction) => {
+  if (e.name === 'SyntaxError')
+    return res.status(400).json({
+      success: false,
+      message: e.message
+    });
+  return next(e.message)
+})
+
 app.use('/', RouterModule);
 
 new DatabaseConnection();

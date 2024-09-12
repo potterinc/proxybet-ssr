@@ -95,7 +95,7 @@ class ErrorResponseHandler {
           message: err.message
         });
       case 'ValidationError':
-        return this.res.status(406).json({
+        return this.res.status(400).json({
           success: false,
           message: err.message
         });

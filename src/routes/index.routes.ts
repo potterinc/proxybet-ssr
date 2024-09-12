@@ -1,11 +1,11 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import AppConfig from "../configs/app.config";
 import authRouter from "./auth.routes";
 
 const RouterModule: Router = Router();
 
 /** @description API BASE ROUTE */
-RouterModule.get('', (req: Request, res: Response) => {
+RouterModule.get('', (req: Request, res: Response, next: NextFunction) => {
   res.redirect(`${AppConfig.server.BASE_URL}`)
 })
 

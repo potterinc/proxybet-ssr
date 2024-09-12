@@ -66,11 +66,9 @@ class AuthenticationService {
    */
   async updatePassword() {
     return await this.authRepository.updatePassword(this.user.id, this.user.password)
-      .then(response => {
-        return response
-      })
-      .catch((e: unknown | any) => {
-        new ServerError(`${e.message}`)
+      .then(user => {
+        if (!user)
+          throw new NotFoundError('User not found');
       })
   }
 }

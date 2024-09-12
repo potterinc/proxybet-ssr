@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import AuthenticationService from "../services/authentication.service";
 import AuthorizedUser from "../middlewares/guard.middleware";
 import { ErrorResponseHandler, ValidationError } from "../utils/errors.utils";
@@ -54,19 +54,22 @@ class AuthController {
   }
 
   /** @description Update new password */
-  async updatePassword(req: Request, res: Response) {
+  async updatePassword(req: Request, res: Response, next: NextFunction) {
     const user: { id: string, password: string } = {
       id: req.body.id,
       password: hashSync(req.body.password, 3)
     }
+
     const authService = new AuthenticationService(user)
     try {
+      if (!user.id || !user.password)
+        throw new ValidationError('Password required');
+      
       await authService.updatePassword()
-        .then((user) => {
-          res.status(201).json({
+        .then(() => {
+          res.status(202).json({
             success: true,
-            message: "Password updated",
-            user
+            message: "Password updated"
           })
         });
     } catch (e: unknown | any) {

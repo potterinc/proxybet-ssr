@@ -24,14 +24,14 @@ class AuthenticationRepository {
   /**
    * Updates user password
    * @param id userId
-   * @param payload password
+   * @param password password
    * @returns 
    */
-  async updatePassword(id: string, payload: any) {
+  async updatePassword(id: string, password: any) {
     return await UserModel.findByIdAndUpdate(id, {
-      $set: payload,
-      $unset: { token: undefined }
-    }).exec();
+      password,
+      $unset: { token: '' }
+    }, { new: true })
   }
 }
 
