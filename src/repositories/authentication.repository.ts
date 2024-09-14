@@ -31,7 +31,19 @@ class AuthenticationRepository {
     return await UserModel.findByIdAndUpdate(id, {
       password,
       $unset: { token: '' }
-    }, { new: true })
+    }, { new: true }).exec()
+  }
+
+  /**
+   * Email validataion for password reset
+   * @param email Email address
+   * @param resetCode Authentication code
+   * @returns 
+   */
+  async validateEmail(user: { email?: string; resetCode?: string }) {
+    return await UserModel.findOneAndUpdate({ email: user.email }, {
+      token: user.resetCode
+    }, { new: true }).exec();
   }
 }
 

@@ -4,6 +4,8 @@ import AuthorizedUser from "../middlewares/guard.middleware";
 import { ErrorResponseHandler, ValidationError } from "../utils/errors.utils";
 import IUser from "../interfaces/user.interface";
 import { hashSync } from "bcryptjs";
+import crypto from 'crypto';
+import Mailer from "../services/email.service";
 
 class AuthController {
 
@@ -63,10 +65,8 @@ class AuthController {
         id: req.body.id,
         password: hashSync(req.body.password, 3)
       }
-      
-      const authService = new AuthenticationService(user)
 
-
+      const authService = new AuthenticationService(user);
       await authService.updatePassword()
         .then(() => {
           res.status(202).json({
@@ -87,6 +87,54 @@ class AuthController {
       message: 'Logged out'
     })
   }
+
+  // Email reset code
+  async emailResetCode(req: Request, res: Response) {
+    const user = {
+      email: req.body.email,
+      resetCode: `BET-${crypto.randomBytes(3).toString('hex').toUpperCase()}`
+    }
+
+    try {
+      if (!user.email)
+        throw new ValidationError('Email is required');
+
+      const authService = new AuthenticationService(user);
+      await authService.validateEmail()
+        .then(data => {
+          return res.status(200).json({
+            success: true,
+            userId: data,
+            message: `Reset code has been sent to ${user.email}`
+          })
+        })
+    } catch (e) {
+      new ErrorResponseHandler(e, res);
+    }
+  }
+
+  // Authenticate Reset Token
+  // const authResetToken = async (req, res) => {
+  //   try {
+  //     const resetToken = await User.findOne({ _id: req.body.id }, { Auth: 1 })
+
+  //     if (resetToken.Auth.token !== req.body.token) {
+  //       res.status(403).json({
+  //         status: false,
+  //         message: "FAILED: Invalid Token!"
+  //       })
+  //     } else {
+  //       res.status(201).json({
+  //         status: true,
+  //       })
+  //     }
+  //   } catch (e) {
+  //     res.status(504).json({
+  //       status: false,
+  //       message: 'FAILED: Token Expired!'
+  //     })
+  //   }
+  // }
 }
 
 export default AuthController;

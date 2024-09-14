@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import Mailer from "./email.service";
 import Guard from "../middlewares/guard.middleware";
 import { response } from "express";
+import { removeInactiveToken } from "../utils/index.utils";
 
 class AuthenticationService {
   private user: IUser;
@@ -52,7 +53,7 @@ class AuthenticationService {
           email: user.email,
           role: user.role,
         }
-        new Mailer('One step to Unlimited Wins', payload);
+        new Mailer('One step to Unlimited Wins', user, 'WELCOME');
         return payload
       })
       .catch((e: Error) => {
@@ -69,6 +70,17 @@ class AuthenticationService {
       .then(user => {
         if (!user)
           throw new NotFoundError('User not found');
+      })
+  }
+
+  async validateEmail() {
+    return await this.authRepository.validateEmail(this.user)
+      .then(user => {
+        if (user){
+          new Mailer('Password Reset', user, 'PASSWORD_RESET');
+          removeInactiveToken(String(user._id));
+          return user._id
+        }
       })
   }
 }

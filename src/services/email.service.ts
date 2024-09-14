@@ -1,13 +1,12 @@
 import mailer, { SendMailOptions, Transporter } from 'nodemailer';
 import AppConfig from '../configs/app.config';
-
-type Recepient = { email: string; firstName: string }
+import IUser from '../interfaces/user.interface';
 
 /**@description Sends email to via SMTP */
 class Mailer {
 	private transporter: Transporter;
 	content: string | undefined;
-	recepient: Recepient;
+	recepient: IUser;
 	options: SendMailOptions;
 
 	/**
@@ -16,14 +15,22 @@ class Mailer {
 	 * @param recepient Recepients object
 	 * @param message message content
 	 */
-	constructor(subject: string, recepient: Recepient, message?: string) {
-		this.content = message;
+	constructor(subject: string, recepient: IUser, template?: 'WELCOME' | 'PASSWORD_RESET') {
 		this.recepient = recepient;
+
+		switch (template) {
+			case 'WELCOME':
+				this.content = this.welcomeMessageTemplate();
+				break;
+			case 'PASSWORD_RESET':
+				this.content = this.passwordResetTemplate();
+		}
+
 		this.options = {
 			from: `ProxyBet <${AppConfig.mailer.USER}>`,
 			to: recepient.email,
 			subject,
-			html: this.WelcomeMessage()
+			html: this.content
 		}
 
 		this.transporter = mailer.createTransport({
@@ -52,38 +59,70 @@ class Mailer {
 	 * Email template for welcome message
 	 * @returns String
 	 */
-	private WelcomeMessage(): string {
-			const template = `<h1 style="text-align:center">Welcome ${this.recepient.firstName},</h1>
-                <p style="text-align:center">
-                Thank you for signing up with ProxyBET, we're so happy to have you
-                on board. You are now one step closer to becoming a bet king!<br>
-                Your account has been Activated!</p>
-                
-                <div style="text-align:center; margin: 50px 0">
-                <a 
-                    href="https://proxybet.com/dashboard" 
-                    target="_blank"
-                    style="
-                        width: 70%; 
-                        padding:15px; 
-                        background: #008080;
-                        text-decoration: none;
-                        text-align:center;
-                        border-radius: 5px;
-                        margin: 20px;
-                        box-shadow: 0 1px 2px #333;
-                        font-weight: bold;
-                        color: #fff"
-                >Click Here to Fund Wallet</a>
-                </div>
-                <hr>
-                 <small>
-                    <p style="text-align:center">&copy; ${new Date().getUTCFullYear()} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
-                </small>
-                <p>
-                `
+	private welcomeMessageTemplate(): string {
+		const template = `
+		<h1 style="text-align:center">Welcome ${this.recepient.firstName},</h1>
+		<p style="text-align:center">
+		Thank you for signing up with ProxyBET, we're so happy to have you
+		on board. You are now one step closer to becoming a bet king!<br>
+		Your account has been Activated!</p>
+		
+		<div style="text-align:center; margin: 50px 0">
+		<a 
+			href="https://proxybet.com/dashboard" 
+			target="_blank"
+			style="
+					width: 70%; 
+					padding:15px; 
+					background: #008080;
+					text-decoration: none;
+					text-align:center;
+					border-radius: 5px;
+					margin: 20px;
+					box-shadow: 0 1px 2px #333;
+					font-weight: bold;
+					color: #fff">
+				Click Here to Fund Wallet
+			</a>
+		</div>
+		<hr>
+			<small>
+				<p style="text-align:center">&copy; ${new Date().getUTCFullYear()} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
+		</small>
+		<p>
+    `
 
 		return template
+	}
+
+	/**
+	 * Template for password reset
+	 * @returns String
+	 */
+	private passwordResetTemplate(): string {
+		const template = `
+		<p style="margin-bottom: 1rem"><strong>Dear ${this.recepient.firstName},</strong></p>
+		<p style="margin-bottom: 2rem">
+			<strong>Please enter the following code 
+				<span 
+					style="font-size: 1.5rem;
+					color:#008080">${this.recepient.token}
+				</span> to verify your account.
+			</strong>
+		</p>
+		<small>
+			<p style="margin-bottom:10px">Please pay attention:</p>
+			<ul>
+				<li>After verification, you will be able to modify your password</li>
+				<li>If you did not apply for a verification code,<br>
+						please sign in to your account and change your password to ensure your account's security.</li>
+				<li>In order to protect your account, please do not allow others access to your email.</li>
+			</ul>
+			<hr>
+			<p style='text-align:center'>&copy; ${new Date().getUTCFullYear()} <a style="color: #008080; text-decoration: none" href="https://proxybet.com" target="_blank">ProxyBet</a>. All rights reserved.</p>
+		</small>`
+
+		return template;
 	}
 }
 
