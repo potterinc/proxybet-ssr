@@ -108,33 +108,27 @@ class AuthController {
             message: `Reset code has been sent to ${user.email}`
           })
         })
-    } catch (e) {
+    } catch (e: unknown | any) {
       new ErrorResponseHandler(e, res);
     }
   }
 
   // Authenticate Reset Token
-  // const authResetToken = async (req, res) => {
-  //   try {
-  //     const resetToken = await User.findOne({ _id: req.body.id }, { Auth: 1 })
-
-  //     if (resetToken.Auth.token !== req.body.token) {
-  //       res.status(403).json({
-  //         status: false,
-  //         message: "FAILED: Invalid Token!"
-  //       })
-  //     } else {
-  //       res.status(201).json({
-  //         status: true,
-  //       })
-  //     }
-  //   } catch (e) {
-  //     res.status(504).json({
-  //       status: false,
-  //       message: 'FAILED: Token Expired!'
-  //     })
-  //   }
-  // }
+  async validateToken(req: Request, res: Response) {
+    const { } = req.body;
+    const authService = new AuthenticationService(req.body);
+    try {
+      await authService.validateToken()
+        .then(user => {
+          res.status(200).json({
+            success: true,
+            message: 'Validation successful'
+          })
+        })
+    } catch (e: unknown | any) {
+      new ErrorResponseHandler(e, res)
+    }
+  }
 }
 
 export default AuthController;

@@ -45,6 +45,13 @@ class AuthenticationRepository {
       token: user.resetCode
     }, { new: true }).exec();
   }
+
+  async validateToken(id: string) {
+    return await UserModel.findOne({ _id: id }, {
+      token: 1,
+      _id: 1
+    }).exec();
+  }
 }
 
 export default AuthenticationRepository;

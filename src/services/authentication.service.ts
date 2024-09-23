@@ -1,7 +1,7 @@
 import IUser from "../interfaces/user.interface";
 import UserModel from "../models/user. model";
 import AuthenticationRepository from "../repositories/authentication.repository";
-import MongooseValidationErrorHandler, { NotFoundError, ServerError } from "../utils/errors.utils";
+import MongooseValidationErrorHandler, { NotFoundError, ServerError, ValidationError } from "../utils/errors.utils";
 import bcrypt from 'bcryptjs';
 import Mailer from "./email.service";
 import Guard from "../middlewares/guard.middleware";
@@ -76,11 +76,28 @@ class AuthenticationService {
   async validateEmail() {
     return await this.authRepository.validateEmail(this.user)
       .then(user => {
-        if (user){
+        if (user) {
           new Mailer('Password Reset', user, 'PASSWORD_RESET');
           removeInactiveToken(String(user._id));
-          return user._id
+          return user._id;
         }
+      })
+  }
+
+  /**
+   * Validated user token
+   * @returns 
+   */
+  async validateToken() {
+    return await this.authRepository.validateToken(this.user.id)
+      .then((user: any) => {
+        if (user) {
+          if (user.token !== this.user.token)
+            throw new ValidationError('Invalid token');
+          return user._id;
+        }
+        else
+          throw new ValidationError('Invalid token');
       })
   }
 }
