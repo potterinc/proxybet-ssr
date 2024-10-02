@@ -7,6 +7,7 @@ import Mailer from "./email.service";
 import Guard from "../middlewares/guard.middleware";
 import { response } from "express";
 import { removeInactiveToken } from "../utils/index.utils";
+import { isValidObjectId } from "mongoose";
 
 class AuthenticationService {
   private user: IUser;
@@ -66,12 +67,16 @@ class AuthenticationService {
    * @returns Updated user object
    */
   async updatePassword() {
+    if (!isValidObjectId(this.user.id))
+      throw new ReferenceError('Invalid user id')
+
     return await this.authRepository.updatePassword(this.user.id, this.user.password)
       .then(user => {
         if (!user)
           throw new NotFoundError('User not found');
       })
   }
+
 
   async validateEmail() {
     return await this.authRepository.validateEmail(this.user)

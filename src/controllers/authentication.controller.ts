@@ -5,7 +5,6 @@ import { ErrorResponseHandler, ValidationError } from "../utils/errors.utils";
 import IUser from "../interfaces/user.interface";
 import { hashSync } from "bcryptjs";
 import crypto from 'crypto';
-import Mailer from "../services/email.service";
 
 class AuthController {
 

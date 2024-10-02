@@ -75,7 +75,9 @@ class MongooseValidationErrorHandler {
       }
         break;
       case 'MongoServerError':
-        throw new DuplicateError('FAILED: User already exist');
+       	const duplicateKey = Object.keys(error.keyValue)[0];
+        const VALUE = error.keyValue[duplicateKey];
+        throw new DuplicateError('FAILED: ${VALUE} already exist');
       default:
         throw new Error(error.message)
     }
